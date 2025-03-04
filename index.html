@@ -329,6 +329,12 @@
     var errorCount = 0;
     var isProcessing = false;
 
+    function vibrate(pattern) {
+      if (navigator.vibrate) {
+        navigator.vibrate(pattern);
+      }
+    }
+
     function startGame() {
       document.getElementById('instructionsModal').style.display = 'none';
       errorCount = 0;
@@ -476,6 +482,13 @@
 
       // Create celebration effect function
       function showAnimation(text, isSuccess) {
+        // Add vibration patterns
+        if (isSuccess) {
+          vibrate([100]); // Short vibration for success
+        } else {
+          vibrate([100, 100, 100]); // Three short vibrations for error
+        }
+
         const bounds = layer.getBounds();
         const center = bounds.getCenter();
         const point = map.latLngToContainerPoint(center);
