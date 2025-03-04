@@ -874,10 +874,12 @@
         if (clues[currentClueIndex].remove.length === 0) {
           currentClueIndex++;
           if (currentClueIndex >= clues.length) {
-            document.getElementById("finalModal").style.display = "flex";
-            document.getElementById("clueContainer").style.display = "none";
-            document.getElementById("message").style.display = "none";
-            document.getElementById("finalErrorCount").innerHTML = errorCount;
+            // Wait for the message to finish before showing the final modal
+            setTimeout(() => {
+              document.getElementById("finalModal").style.display = "flex";
+              document.getElementById("clueContainer").style.display = "none";
+              document.getElementById("finalErrorCount").innerHTML = errorCount;
+            }, 4500); // Wait for message display (4000) + animation (500)
           } else {
             updateClue();
           }
