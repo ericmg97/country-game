@@ -332,6 +332,84 @@
         font-size: 14px;
       }
     }
+    .countries-sidebar {
+      position: fixed;
+      top: 50%;
+      left: 20px;
+      transform: translateY(-50%);
+      background: rgba(255, 255, 255, 0.95);
+      padding: 15px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      z-index: 1000;
+      backdrop-filter: blur(5px);
+      border: 2px solid #4CAF50;
+      max-height: 70vh;
+      overflow-y: auto;
+      width: 200px;
+    }
+
+    .countries-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .country-item {
+      padding: 8px 12px;
+      margin: 4px 0;
+      border-radius: 8px;
+      background: #f0f9f0;
+      color: #333;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .country-item:hover {
+      background: #4CAF50;
+      color: white;
+    }
+
+    .country-item.removed {
+      background: #ddd;
+      color: #999;
+      text-decoration: line-through;
+      pointer-events: none;
+    }
+
+    .sidebar-title {
+      font-size: 16px;
+      color: #333;
+      margin-bottom: 10px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    @media (max-width: 768px) {
+      .countries-sidebar {
+        top: auto;
+        bottom: 100px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 85%;
+        max-height: 150px;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .countries-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: center;
+      }
+
+      .country-item {
+        font-size: 14px;
+        padding: 6px 10px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -345,6 +423,12 @@
       </div>
     </div>
     <div class="clue-text" id="clueText"></div>
+  </div>
+  <div class="countries-sidebar">
+    <div class="sidebar-title">Países Disponibles</div>
+    <ul class="countries-list" id="countriesList">
+      <!-- Countries will be added here dynamically -->
+    </ul>
   </div>
   <div class="message-container" id="message"></div>
   <div class="modal-overlay" id="instructionsModal">
@@ -509,6 +593,33 @@
       }
     }
 
+    // Mover estas funciones fuera del fetch y antes de él
+    function createCountriesList() {
+      const countriesList = document.getElementById('countriesList');
+      countriesList.innerHTML = ''; // Limpiar la lista primero
+      candidates.forEach(candidate => {
+        const li = document.createElement('li');
+        li.className = 'country-item';
+        li.id = `country-item-${candidate.name}`;
+        li.textContent = candidate.name;
+        li.onclick = () => {
+          const layer = countryLayers[candidate.name];
+          if (layer) {
+            checkSelection(candidate.name, layer);
+          }
+        };
+        countriesList.appendChild(li);
+      });
+    }
+
+    function markCountryAsRemoved(country) {
+      const countryItem = document.getElementById(`country-item-${country}`);
+      if (countryItem) {
+        countryItem.classList.add('removed');
+      }
+    }
+
+    // Modificar el fetch para eliminar el código duplicado y las definiciones de funciones
     fetch('https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json')
       .then(response => response.json())
       .then(data => {
@@ -558,7 +669,6 @@
             if (candidate) {
               countryLayers[candidate.name] = layer;
 
-              // Store label marker reference
               const center = layer.getBounds().getCenter();
               const labelMarker = L.marker(center, {
                 icon: L.divIcon({
@@ -569,15 +679,12 @@
                 })
               }).addTo(map);
 
-              // Store the label marker reference
               labelMarkers[candidate.name] = labelMarker;
 
-              // Add click handler to the label
               labelMarker.on('click', function() {
                 checkSelection(candidate.name, layer);
               });
 
-              // Add click handler and hover effects to the country
               layer.on({
                 click: function() {
                   checkSelection(candidate.name, layer);
@@ -598,6 +705,9 @@
             }
           }
         }).addTo(map);
+
+        // Crear la lista de países después de que el mapa esté listo
+        createCountriesList();
       })
       .catch(error => {
         console.error('Error loading GeoJSON:', error);
@@ -673,7 +783,6 @@
       if (clues[currentClueIndex].remove.includes(country)) {
         showAnimation('¡Correcto! 🎉', true);
 
-        // Grey out and disable the GeoJSON layer
         layer.setStyle({
           fillColor: '#808080',
           fillOpacity: 0.3,
@@ -682,13 +791,13 @@
         });
         layer.off('mouseover mouseout click');
 
-        // Remove the label marker
         if (labelMarkers[country]) {
           map.removeLayer(labelMarkers[country]);
           delete labelMarkers[country];
         }
 
-        // Mostrar explicación del descarte (sin setTimeout)
+        markCountryAsRemoved(country);
+
         const explanation = clues[currentClueIndex].explanations[country];
         document.getElementById("message").className = "message-container success-message";
         document.getElementById("message").innerHTML = explanation;
