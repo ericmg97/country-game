@@ -128,7 +128,7 @@
     }
     .message-container {
       position: fixed;
-      bottom: 20px;
+      top: calc(20px + 100px); /* Closer to clue container */
       left: 50%;
       transform: translateX(-50%);
       background: rgba(255, 255, 255, 0.95);
@@ -139,6 +139,12 @@
       text-align: center;
       min-width: 200px;
       backdrop-filter: blur(5px);
+      display: none;
+      animation: slideInDown 0.3s ease-out;
+      transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+    }
+    .message-container.hiding {
+      animation: slideOutUp 0.3s ease-in forwards;
     }
     .success-message {
       color: #4CAF50;
@@ -253,10 +259,10 @@
       }
 
       .message-container {
+        top: calc(10px + 130px); /* Closer to mobile clue container */
         min-width: 85%;
         padding: 15px 20px;
         font-size: 18px;
-        bottom: 30px;
       }
 
       .country-label div {
@@ -410,6 +416,29 @@
         padding: 6px 10px;
       }
     }
+
+    /* Add these new animations to your CSS section */
+    @keyframes slideInDown {
+      from {
+        transform: translate(-50%, -20px);
+        opacity: 0;
+      }
+      to {
+        transform: translate(-50%, 0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideOutUp {
+      from {
+        transform: translate(-50%, 0);
+        opacity: 1;
+      }
+      to {
+        transform: translate(-50%, -20px);
+        opacity: 0;
+      }
+    }
   </style>
 </head>
 <body>
@@ -552,6 +581,7 @@
 
     var errorCount = 0;
     var isProcessing = false;
+    var messageTimeout = null;
 
     function vibrate(pattern) {
       if (navigator.vibrate) {
@@ -744,6 +774,43 @@
     `;
     document.head.appendChild(style);
 
+    function showMessage(message, isSuccess) {
+      const messageContainer = document.getElementById("message");
+      
+      // Clear any existing timeouts
+      if (messageTimeout) {
+        clearTimeout(messageTimeout);
+        messageTimeout = null;
+      }
+      
+      // If a message is currently animating out, remove the animation and show new message immediately
+      if (messageContainer.classList.contains('hiding')) {
+        messageContainer.classList.remove('hiding');
+        messageContainer.style.display = 'block';
+      }
+      
+      // Set the message and style
+      messageContainer.innerHTML = message;
+      messageContainer.className = `message-container ${isSuccess ? 'success-message' : 'error-message'}`;
+      
+      // Show the message
+      messageContainer.style.display = 'block';
+      
+      // Set new timeout
+      messageTimeout = setTimeout(() => {
+        // Only start hiding if this is still the active timeout
+        if (messageTimeout) {
+          messageContainer.classList.add('hiding');
+          setTimeout(() => {
+            // Only hide if the message hasn't been updated
+            if (messageContainer.classList.contains('hiding')) {
+              messageContainer.style.display = 'none';
+            }
+          }, 500); // Animation duration
+        }
+      }, 4000);
+    }
+
     function checkSelection(country, layer) {
       if (isProcessing) return;
       isProcessing = true;
@@ -799,8 +866,7 @@
         markCountryAsRemoved(country);
 
         const explanation = clues[currentClueIndex].explanations[country];
-        document.getElementById("message").className = "message-container success-message";
-        document.getElementById("message").innerHTML = explanation;
+        showMessage(explanation, true);
 
         clues[currentClueIndex].remove = clues[currentClueIndex].remove.filter(c => c !== country);
         document.getElementById("remainingCount").innerHTML = `${clues[currentClueIndex].remove.length} países restantes`;
@@ -820,8 +886,7 @@
         showAnimation('¡Incorrecto! ❌', false);
         errorCount++;
         document.getElementById("errorCount").innerHTML = `${errorCount} fallos`;
-        document.getElementById("message").className = "message-container error-message";
-        document.getElementById("message").innerHTML = "¡Error! Este país sí cumple la afirmación.";
+        showMessage("¡Error! Este país sí cumple la afirmación.", false);
       }
     }
   </script>
