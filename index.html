@@ -223,6 +223,114 @@
     .clue-text.animate {
       animation: textFadeIn 0.5s ease-out;
     }
+    @media (max-width: 768px) {
+      .clue-container {
+        min-width: 85%;
+        padding: 20px;
+        top: 10px;
+      }
+
+      .clue-text {
+        font-size: 22px;
+        line-height: 1.4;
+        padding: 10px 0;
+      }
+
+      .clue-info {
+        font-size: 16px;
+        margin-bottom: 15px;
+      }
+
+      .remaining-countries {
+        font-size: 14px;
+        padding: 4px 12px;
+      }
+
+      .error-counter {
+        font-size: 14px;
+        padding: 4px 12px;
+      }
+
+      .message-container {
+        min-width: 85%;
+        padding: 15px 20px;
+        font-size: 18px;
+        bottom: 30px;
+      }
+
+      .country-label div {
+        font-size: 18px;
+        width: 120px;
+        text-shadow: 
+          3px 3px 3px white,
+          -3px 3px 3px white,
+          3px -3px 3px white,
+          -3px -3px 3px white;
+      }
+
+      .celebration {
+        font-size: 32px;
+      }
+
+      /* Estilos para modales en móvil */
+      .modal {
+        width: 85%;
+        padding: 25px;
+        margin: 20px;
+      }
+
+      .modal ul {
+        padding-left: 20px;
+      }
+
+      .modal li {
+        font-size: 16px;
+        margin-bottom: 10px;
+      }
+
+      .start-button {
+        font-size: 18px;
+        padding: 15px 30px;
+      }
+
+      .final-modal {
+        width: 85%;
+        padding: 30px;
+      }
+
+      .final-modal h2 {
+        font-size: 26px;
+      }
+
+      .final-modal p {
+        font-size: 20px;
+      }
+
+      .final-country {
+        font-size: 18px;
+        padding: 12px 24px;
+      }
+    }
+
+    /* Ajustes específicos para pantallas muy pequeñas */
+    @media (max-width: 360px) {
+      .clue-text {
+        font-size: 20px;
+      }
+
+      .country-label div {
+        font-size: 16px;
+        width: 100px;
+      }
+
+      .modal {
+        padding: 20px;
+      }
+
+      .modal li {
+        font-size: 14px;
+      }
+    }
   </style>
 </head>
 <body>
