@@ -566,6 +566,45 @@
       opacity: 1;
       pointer-events: auto;
     }
+
+    /* Add new animation for clue changes */
+    @keyframes newClueAnimation {
+      0% { 
+        transform: translateX(-50%) scale(1);
+        background: rgba(255, 255, 255, 0.95);
+        border-color: #4CAF50;
+      }
+      50% { 
+        transform: translateX(-50%) scale(1.05);
+        background: rgba(76, 175, 80, 0.15);
+        border-color: #45a049;
+      }
+      100% { 
+        transform: translateX(-50%) scale(1);
+        background: rgba(255, 255, 255, 0.95);
+        border-color: #4CAF50;
+      }
+    }
+
+    .clue-container.new-clue {
+      animation: newClueAnimation 1s ease-out;
+    }
+
+    /* Add animation for clue text */
+    @keyframes clueTextAnimation {
+      0% {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .clue-text.new-clue {
+      animation: clueTextAnimation 0.8s ease-out;
+    }
   </style>
 </head>
 <body>
@@ -738,9 +777,9 @@
         const clueNumber = document.getElementById("clueNumber");
         const remainingCount = document.getElementById("remainingCount");
 
-        // Add animation classes
-        clueContainer.classList.add('animate');
-        clueText.classList.add('animate');
+        // Add new-clue class for animations
+        clueContainer.classList.add('new-clue');
+        clueText.classList.add('new-clue');
 
         // Update the content
         clueNumber.innerHTML = `Afirmación ${currentClueIndex + 1} de ${clues.length}`;
@@ -749,12 +788,12 @@
 
         // Remove animation classes after animation completes
         setTimeout(() => {
-          clueContainer.classList.remove('animate');
-          clueText.classList.remove('animate');
-        }, 500);
+          clueContainer.classList.remove('new-clue');
+          clueText.classList.remove('new-clue');
+        }, 1000);
 
-        // Add vibration feedback for new clue
-        vibrate([50, 50, 50]);
+        // Add stronger vibration feedback for new clue
+        vibrate([100, 50, 100]);
       }
     }
 
