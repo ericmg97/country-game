@@ -554,13 +554,25 @@
     .country-item.correct {
       animation: correctItem 0.5s ease-out forwards;
     }
+
+    /* Add this CSS for initial state */
+    .clue-container, .countries-sidebar {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .clue-container.visible, .countries-sidebar.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
   </style>
 </head>
 <body>
   <div id="map"></div>
   <div class="clue-container" id="clueContainer">
     <div class="clue-info">
-      <span id="clueNumber">Afirmación 1 de 5</span>
+      <span id="clueNumber">Afirmación 1 de 7</span>
       <div>
         <span class="remaining-countries" id="remainingCount"></span>
         <span class="error-counter" id="errorCount">0 fallos</span>
@@ -706,6 +718,14 @@
 
     function startGame() {
       document.getElementById('instructionsModal').style.display = 'none';
+      
+      // Show the clue container and sidebar with animation
+      const clueContainer = document.getElementById('clueContainer');
+      const countriesSidebar = document.querySelector('.countries-sidebar');
+      
+      clueContainer.classList.add('visible');
+      countriesSidebar.classList.add('visible');
+      
       errorCount = 0;
       document.getElementById("errorCount").innerHTML = "0 fallos";
       updateClue();
