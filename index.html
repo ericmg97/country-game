@@ -317,9 +317,49 @@
         font-size: 18px;
         padding: 12px 24px;
       }
+
+      /* Update the mobile styles for the countries sidebar */
+      .countries-sidebar {
+        position: fixed;
+        top: auto;
+        bottom: 5px; /* Cambiado de 20px a 5px para ponerlo más abajo */
+        left: 50%;
+        transform: translateX(-50%);
+        width: 85%;
+        max-height: 120px; /* Reducido de 150px a 120px */
+        display: flex;
+        flex-direction: column;
+        background: rgba(255, 255, 255, 0.98);
+        z-index: 1001;
+        padding: 10px; /* Reducido el padding */
+      }
+
+      .countries-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: center;
+        padding-bottom: 5px; /* Add some padding at the bottom */
+      }
+
+      .country-item {
+        font-size: 14px;
+        padding: 6px 10px;
+        margin: 0; /* Remove vertical margins */
+      }
+
+      /* Add some bottom padding to the map container to prevent the list from covering the bottom of the map */
+      #map {
+        padding-bottom: 130px; /* Ajustado para el nuevo tamaño */
+      }
+
+      .sidebar-title {
+        font-size: 14px; /* Reducido el tamaño del título */
+        margin-bottom: 5px; /* Menos espacio debajo del título */
+      }
     }
 
-    /* Ajustes específicos para pantallas muy pequeñas */
+    /* Additional adjustments for very small screens */
     @media (max-width: 360px) {
       .clue-text {
         font-size: 20px;
@@ -336,6 +376,20 @@
 
       .modal li {
         font-size: 14px;
+      }
+
+      .countries-sidebar {
+        bottom: 2px; /* Aún más abajo para pantallas pequeñas */
+        max-height: 100px; /* Altura máxima más pequeña */
+      }
+
+      .country-item {
+        font-size: 12px;
+        padding: 4px 8px;
+      }
+
+      #map {
+        padding-bottom: 110px; /* Ajustado para pantallas pequeñas */
       }
     }
     .countries-sidebar {
@@ -394,12 +448,13 @@
 
     @media (max-width: 768px) {
       .countries-sidebar {
+        position: fixed;
         top: auto;
-        bottom: 100px;
+        bottom: 5px; /* Cambiado de 20px a 5px para ponerlo más abajo */
         left: 50%;
         transform: translateX(-50%);
         width: 85%;
-        max-height: 150px;
+        max-height: 120px; /* Reducido de 150px a 120px */
         display: flex;
         flex-direction: column;
       }
