@@ -192,6 +192,37 @@
       font-size: 12px;
       margin-left: 8px;
     }
+    @keyframes clueFlash {
+      0% { 
+        transform: translateX(-50%) scale(1); 
+        background: rgba(255, 255, 255, 0.95); 
+      }
+      50% { 
+        transform: translateX(-50%) scale(1.02); 
+        background: rgba(76, 175, 80, 0.2); 
+      }
+      100% { 
+        transform: translateX(-50%) scale(1); 
+        background: rgba(255, 255, 255, 0.95); 
+      }
+    }
+    @keyframes textFadeIn {
+      0% { 
+        opacity: 0; 
+        transform: translateY(-10px); 
+      }
+      100% { 
+        opacity: 1; 
+        transform: translateY(0); 
+      }
+    }
+    .clue-container.animate {
+      animation: clueFlash 0.5s ease-out;
+      transform-origin: center;
+    }
+    .clue-text.animate {
+      animation: textFadeIn 0.5s ease-out;
+    }
   </style>
 </head>
 <body>
@@ -344,10 +375,28 @@
 
     function updateClue() {
       if (currentClueIndex < clues.length) {
-        const currentClue = clues[currentClueIndex];
-        document.getElementById("clueNumber").innerHTML = `Afirmación ${currentClueIndex + 1} de ${clues.length}`;
-        document.getElementById("clueText").innerHTML = currentClue.text;
-        document.getElementById("remainingCount").innerHTML = `${currentClue.remove.length} países restantes`;
+        const clueContainer = document.getElementById("clueContainer");
+        const clueText = document.getElementById("clueText");
+        const clueNumber = document.getElementById("clueNumber");
+        const remainingCount = document.getElementById("remainingCount");
+
+        // Add animation classes
+        clueContainer.classList.add('animate');
+        clueText.classList.add('animate');
+
+        // Update the content
+        clueNumber.innerHTML = `Afirmación ${currentClueIndex + 1} de ${clues.length}`;
+        clueText.innerHTML = clues[currentClueIndex].text;
+        remainingCount.innerHTML = `${clues[currentClueIndex].remove.length} países restantes`;
+
+        // Remove animation classes after animation completes
+        setTimeout(() => {
+          clueContainer.classList.remove('animate');
+          clueText.classList.remove('animate');
+        }, 500);
+
+        // Add vibration feedback for new clue
+        vibrate([50, 50, 50]);
       }
     }
 
