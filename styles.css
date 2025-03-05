@@ -420,7 +420,7 @@ button {
     .message-container {
         position: fixed;
         top: auto;
-        bottom: 120px;
+        bottom: 170px;
         left: 50%;
         transform: translateX(-50%);
         width: 85%;
@@ -561,7 +561,7 @@ button {
     }
 
     .message-container {
-        bottom: 140px;
+        bottom: 190px;
         font-size: 13px;
         padding: 3px;
     }

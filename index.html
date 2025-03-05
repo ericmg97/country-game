@@ -545,6 +545,9 @@
 
     // Add these new functions after the startGame function
     function restartGame() {
+      // Reset map view to initial position
+      map.setView([55, 15], 3);
+      
       // Hide game over modal
       document.getElementById('gameOverModal').style.display = 'none';
       
