@@ -186,7 +186,11 @@
           "Estonia": "Estonia tiene costa en el mar Báltico y el golfo de Finlandia",
           "Letonia": "Letonia tiene una extensa costa en el mar Báltico",
           "Lituania": "Lituania tiene una pequeña costa en el mar Báltico",
-          "Suecia": "Suecia tiene una extensa costa en el mar Báltico"
+          "Suecia": "Suecia tiene una extensa costa en el mar Báltico",
+          "Malta": "Malta está ubicada en el mar Mediterráneo, no en el mar Báltico",
+          "Chipre": "Chipre está ubicada en el mar Mediterráneo oriental, no en el mar Báltico",
+          "Liechtenstein": "Liechtenstein no tiene acceso al mar",
+          "Macedonia": "Macedonia del Norte no tiene acceso al mar"
         }
       },
       { 
@@ -195,7 +199,15 @@
         explanations: {
           "Lituania": "Vilna, la capital de Lituania, está ubicada tierra adentro y no tiene acceso directo al mar",
           "Finlandia": "Helsinki, la capital de Finlandia, está ubicada en el golfo de Finlandia",
-          "Estonia": "Tallin, la capital de Estonia, está ubicada en el golfo de Finlandia"
+          "Estonia": "Tallin, la capital de Estonia, está ubicada en el golfo de Finlandia",
+          "Malta": "La Valeta, la capital de Malta, está en el mar Mediterráneo, no en un golfo",
+          "Chipre": "Nicosia, la capital de Chipre, está ubicada en el interior de la isla",
+          "Croacia": "Zagreb, la capital de Croacia, está ubicada en el interior del país",
+          "Macedonia": "Skopje, la capital de Macedonia del Norte, está ubicada en el interior del país",
+          "Liechtenstein": "Vaduz, la capital de Liechtenstein, está ubicada en el interior del país",
+          "Noruega": "Oslo está ubicada en un fiordo, no en un golfo",
+          "Letonia": "Riga está ubicada en el golfo de Riga",
+          "Suecia": "Estocolmo está ubicada en un archipiélago, no directamente en un golfo"
         }
       },
       { 
@@ -205,7 +217,13 @@
           "Letonia": "Riga, la capital de Letonia, está a más de 80km por mar de cualquier otra capital europea",
           "Suecia": "Estocolmo, la capital de Suecia, está a más de 80km por mar de cualquier otra capital europea",
           "Finlandia": "Helsinki está a aproximadamente 80km de Tallin por mar",
-          "Estonia": "Tallin está a aproximadamente 80km de Helsinki por mar"
+          "Estonia": "Tallin está a aproximadamente 80km de Helsinki por mar",
+          "Malta": "La Valeta está a más de 80km de cualquier otra capital europea",
+          "Chipre": "Nicosia está a más de 80km de cualquier otra capital europea",
+          "Croacia": "Zagreb no tiene acceso directo al mar",
+          "Macedonia": "Skopje no tiene acceso al mar",
+          "Liechtenstein": "Vaduz no tiene acceso al mar",
+          "Noruega": "Oslo está a más de 80km por mar de cualquier otra capital europea"
         }
       }
     ];
@@ -661,7 +679,7 @@
 
         // Show positive feedback message
         const explanation = clues[currentClueIndex].explanations[country];
-        showMessage(`¡Correcto! ${explanation || "¡Correcto! Este país cumple con la afirmación"}`, true);
+        showMessage(`¡Correcto! ${explanation || "Este país cumple con la afirmación"}`, true);
 
         // Add to list of correctly selected countries for this clue
         if (!clues[currentClueIndex].correctlySelected) {
@@ -892,7 +910,7 @@
         
         // Show explanation for incorrect selection
         const explanation = clues[currentClueIndex].explanations[country];
-        showMessage(`¡Incorrecto! ${explanation}` || "¡Incorrecto! Este país no cumple la afirmación.", false);
+        showMessage(`¡Incorrecto! ${explanation}` || "Este país no cumple la afirmación.", false);
 
         // Verificar si perdió (3 fallos) antes de continuar con cualquier otra lógica
         if (errorCount >= 3) {
