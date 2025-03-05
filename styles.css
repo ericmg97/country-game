@@ -420,7 +420,7 @@ button {
     .message-container {
         position: fixed;
         top: auto;
-        bottom: 170px;
+        bottom: 140px;
         left: 50%;
         transform: translateX(-50%);
         width: 85%;
@@ -561,7 +561,7 @@ button {
     }
 
     .message-container {
-        bottom: 190px;
+        bottom: 160px;
         font-size: 13px;
         padding: 3px;
     }
@@ -901,4 +901,29 @@ button {
     color: #000;
     transform: scale(1.1);
     transition: all 0.2s ease;
+}
+
+/* Add this new style for temporarily disabled items */
+.country-item.temp-disabled {
+    opacity: 0.5;
+    pointer-events: none;
+    cursor: not-allowed;
+}
+
+/* Update the hover state to work only when not disabled */
+.country-item:not(.temp-disabled):hover {
+    background: #4CAF50;
+    color: white;
+}
+
+/* Add styles for disabled country labels */
+.country-label.temp-disabled div {
+    color: #999 !important;
+    opacity: 0.5;
+    cursor: not-allowed !important;
+    pointer-events: none !important;
+}
+
+.country-label.temp-disabled div:hover {
+    transform: none;
 }
