@@ -15,7 +15,7 @@
       <span id="clueNumber">Afirmación 1 de 7</span>
       <div>
         <span class="remaining-countries" id="remainingCount"></span>
-        <span class="error-counter" id="errorCount">0 fallos</span>
+        <span class="error-counter" id="errorCount">0/3</span>
       </div>
     </div>
     <div class="clue-text" id="clueText"></div>
@@ -35,17 +35,17 @@
         <p class="main-description">Se te presentarán varias afirmaciones sobre países.</p>
         
         <div class="instructions-list">
-          <p><strong>Tu objetivo:</strong> Identificar y hacer clic en los países que <strong>NO</strong> cumplen con la afirmación mostrada.</p>
+          <p><strong>Tu objetivo:</strong> Identificar y hacer clic en los países que cumplen con la afirmación mostrada.</p>
           
           <ul>
             <li>Puedes hacer clic en el país directamente en el mapa o en su nombre en la lista a la izquierda para seleccionarlo</li>
-            <li>Cuando selecciones todos los países que no cumplan con una afirmación, pasarás a la siguiente.</li>
-            <li>Los países correctamente seleccionados se volverán grises y serán descartados como posibles destinos</li>
-          </ul>
+            <li>Cuando selecciones todos los países que cumplan con una afirmación, pasarás a la siguiente.</li>
+            <li>Los países que no cumplan con la afirmación se marcarán en rojo y serán descartados como posibles destinos</li>
+      </ul>
           
           <p class="highlight-text">Al final del juego, ¡solo quedará tu destino sorpresa! 🎉</p>
           
-          <p class="warning-text">⚠️ Importante: Con más de 5 fallos, se cancela automáticamente la reserva.</p>
+          <p class="warning-text">⚠️ Importante: Con más de 3 fallos, se cancela automáticamente la reserva.</p>
         </div>
       </div>
       
@@ -61,15 +61,15 @@
         
         <div class="destination-reveal">
           <p class="reveal-text">Tu destino sorpresa son <strong>dos destinos</strong>:</p>
-          <div class="final-countries">
+      <div class="final-countries">
             <div class="final-country">
               <span class="country-emoji">🇫🇮</span>
               <span class="country-name">Finlandia</span>
-            </div>
+      </div>
             <div class="final-country">
               <span class="country-emoji">🇪🇪</span>
               <span class="country-name">Estonia</span>
-            </div>
+    </div>
           </div>
         </div>
         
@@ -218,7 +218,7 @@
       countriesSidebar.classList.add('visible');
       
       errorCount = 0;
-      document.getElementById("errorCount").innerHTML = "0 fallos";
+      document.getElementById("errorCount").innerHTML = "0/3";
       
       // Clear any disabled states
       disabledCountries.clear();
@@ -255,7 +255,7 @@
       updateClue();
     }
 
-    function showLevelBanner(level, total) {
+    function showLevelBanner(level, total, byElimination = false) {
         // Block interactions
         levelBannerActive = true;
         
@@ -269,7 +269,9 @@
 
         banner.innerHTML = `
             <h2>¡Afirmación ${level} de ${total}! 🎯</h2>
-            <p>${level === 1 ? '¡Comencemos!' : '¡Excelente progreso!'}</p>
+            <p>${byElimination ? 
+                '¡Has pasado por descarte! 🤔 La próxima intenta ser menos tonto 🫣' : 
+                (level === 1 ? '¡Comencemos!' : '¡Excelente progreso!')}</p>
         `;
 
         // Show the banner
@@ -289,7 +291,7 @@
         window.levelBannerTimeout = setTimeout(() => {
             levelBannerActive = false;
             banner.classList.remove('show');
-        }, 2000);
+        }, byElimination ? 5000 : 2500); // Más tiempo si es por descarte
     }
 
     function updateClue() {
@@ -297,63 +299,42 @@
         // Mostrar el banner de nivel
         showLevelBanner(currentClueIndex + 1, clues.length);
         
-        // Enable all countries for the new clue
-        disabledCountries.clear();
-        
-        // Re-enable all country items in the list
-        document.querySelectorAll('.country-item.temp-disabled').forEach(el => {
-          el.classList.remove('temp-disabled');
-          el.classList.remove('incorrect');
-          // Reset to the original background color
-          el.style.background = '#f0f9f0';
+        // Initialize correctlySelected for the new clue
+        clues[currentClueIndex].correctlySelected = new Set();
+
+        // Calculate available countries (excluyendo los eliminados)
+        const availableCountries = candidates.filter(candidate => {
+          // Un país está disponible si no está en disabledCountries
+          return !disabledCountries.has(candidate.name);
         });
+
+        // Calculate remaining countries from available ones
+        const totalAvailable = availableCountries.length;
+        const incorrectCountries = clues[currentClueIndex].remove.filter(country => 
+          // Solo contar países incorrectos que aún están disponibles
+          availableCountries.some(c => c.name === country)
+        ).length;
+        const correctCountries = totalAvailable - incorrectCountries;
         
-        // Re-enable all map layers and labels
-        candidates.forEach(candidate => {
-          const layer = countryLayers[candidate.name];
-          if (layer) {
-            layer.setStyle({
-              fillOpacity: 0.6,
-              opacity: 1
-            });
-            
-            // Re-attach click event
-            layer.on('click', function() {
-              checkSelection(candidate.name, layer);
-            });
-          }
-          
-          // Re-enable label
-          if (labelMarkers[candidate.name]) {
-            const labelElement = labelMarkers[candidate.name].getElement();
-            labelElement.classList.remove('temp-disabled');
-            labelMarkers[candidate.name].on('click', function() {
-              checkSelection(candidate.name, layer);
-            });
-          }
-        });
-        
+        // Actualizar el contador de países restantes
+        const remainingCount = document.getElementById("remainingCount");
+        remainingCount.innerHTML = `${correctCountries} países restantes`;
+
         const clueContainer = document.getElementById("clueContainer");
         const clueText = document.getElementById("clueText");
         const clueNumber = document.getElementById("clueNumber");
-        const remainingCount = document.getElementById("remainingCount");
 
-        // Add new-clue class for animations
         clueContainer.classList.add('new-clue');
         clueText.classList.add('new-clue');
 
-        // Update the content
         clueNumber.innerHTML = `Afirmación ${currentClueIndex + 1} de ${clues.length}`;
         clueText.innerHTML = clues[currentClueIndex].text;
-        remainingCount.innerHTML = `${clues[currentClueIndex].remove.length} países restantes`;
 
-        // Remove animation classes after animation completes
         setTimeout(() => {
           clueContainer.classList.remove('new-clue');
           clueText.classList.remove('new-clue');
         }, 1000);
 
-        // Add stronger vibration feedback for new clue
         vibrate([100, 50, 100]);
       }
     }
@@ -518,7 +499,6 @@
     }
 
     function checkSelection(country, layer) {
-      // Add clueFinished to the conditions that block clicks
       if (isProcessing || !gameActive || disabledCountries.has(country) || levelBannerActive) return;
       isProcessing = true;
 
@@ -554,23 +534,19 @@
       document.getElementById("message").innerHTML = "";
       document.getElementById("message").className = "message-container";
 
-      if (clues[currentClueIndex].remove.includes(country)) {
+      // Invert the logic: now we check if the country is NOT in the remove array
+      if (!clues[currentClueIndex].remove.includes(country)) {
         showAnimation('¡Correcto! 🎉', true);
         
-        // Add the animation class
         const countryItem = document.getElementById(`country-item-${country}`);
         if (countryItem) {
           countryItem.classList.add('correct');
-          // Wait for the animation to complete before adding the removed class
-          setTimeout(() => {
-            countryItem.classList.add('removed');
-          }, 500);
         }
 
         layer.setStyle({
-          fillColor: '#808080',
-          fillOpacity: 0.3,
-          color: '#666',
+          fillColor: '#4CAF50',
+          fillOpacity: 0.6,
+          color: '#45a049',
           weight: 1
         });
         layer.off('mouseover mouseout click');
@@ -580,19 +556,33 @@
           delete labelMarkers[country];
         }
 
-        markCountryAsRemoved(country);
+        // Show positive feedback message
+        showMessage(`¡Correcto! ${country} sí cumple con la afirmación.`, true);
 
-        const explanation = clues[currentClueIndex].explanations[country];
-        showMessage(explanation, true);
+        // Add to list of correctly selected countries for this clue
+        if (!clues[currentClueIndex].correctlySelected) {
+          clues[currentClueIndex].correctlySelected = new Set();
+        }
+        clues[currentClueIndex].correctlySelected.add(country);
 
-        clues[currentClueIndex].remove = clues[currentClueIndex].remove.filter(c => c !== country);
-        document.getElementById("remainingCount").innerHTML = `${clues[currentClueIndex].remove.length} países restantes`;
+        // Actualizar el contador considerando solo países disponibles
+        const availableCountries = candidates.filter(c => !disabledCountries.has(c.name));
+        const totalAvailable = availableCountries.length;
+        const incorrectCountries = clues[currentClueIndex].remove.filter(c => 
+          availableCountries.some(ac => ac.name === c)
+        ).length;
+        const correctCountries = totalAvailable - incorrectCountries;
+        const selectedCorrect = clues[currentClueIndex].correctlySelected.size;
 
-        if (clues[currentClueIndex].remove.length === 0) {
+        document.getElementById("remainingCount").innerHTML = 
+          `${correctCountries - selectedCorrect} países restantes`;
+
+        if (selectedCorrect === correctCountries) {
           // Block clicks immediately when clue is completed
           levelBannerActive = true;
           
           currentClueIndex++;
+          
           if (currentClueIndex >= clues.length) {
             // Disable game immediately
             gameActive = false;
@@ -620,33 +610,170 @@
               
             }, 3500);
           } else {
-            // Wait for the success message to finish before updating clue
+            // Wait for message duration (3000) + animation duration (500) before showing banner
             setTimeout(() => {
-              updateClue();
-            }, 3500);
+              // Show the banner
+              showLevelBanner(currentClueIndex + 1, clues.length, false);
+              
+              // Then process the country updates after banner shows
+              setTimeout(() => {
+                // Primero, deshabilitar y marcar en rojo los países que no cumplían la afirmación
+                clues[currentClueIndex - 1].remove.forEach(countryToDisable => {
+                  // Solo si el país no estaba ya deshabilitado (por un error del usuario)
+                  if (!disabledCountries.has(countryToDisable)) {
+                    const layerToDisable = countryLayers[countryToDisable];
+                    const itemToDisable = document.getElementById(`country-item-${countryToDisable}`);
+                    
+                    // Deshabilitar y marcar en rojo el país en el mapa
+                    if (layerToDisable) {
+                      layerToDisable.setStyle({
+                        fillColor: '#ff3333',
+                        fillOpacity: 0.6,
+                        color: '#cc0000',
+                        weight: 2,
+                        opacity: 0.8
+                      });
+                      layerToDisable.off('click mouseover mouseout');
+                    }
+                    
+                    // Deshabilitar y marcar en rojo el país en la lista
+                    if (itemToDisable) {
+                      itemToDisable.classList.remove('correct'); // Remover la clase correct si existe
+                      itemToDisable.classList.add('incorrect', 'temp-disabled');
+                    }
+                    
+                    // Deshabilitar la etiqueta del país
+                    if (labelMarkers[countryToDisable]) {
+                      const labelElement = labelMarkers[countryToDisable].getElement();
+                      labelElement.classList.add('temp-disabled');
+                      labelMarkers[countryToDisable].off('click');
+                    }
+                    
+                    disabledCountries.add(countryToDisable);
+                  }
+                });
+
+                // Luego reactivar los países correctamente seleccionados
+                clues[currentClueIndex - 1].correctlySelected.forEach(selectedCountry => {
+                  const selectedLayer = countryLayers[selectedCountry];
+                  const selectedItem = document.getElementById(`country-item-${selectedCountry}`);
+                  
+                  if (selectedLayer) {
+                    const hue = Math.random() * 360;
+                    selectedLayer.setStyle({
+                      fillColor: `hsl(${hue}, 70%, 85%)`,
+                      color: '#666',
+                      weight: 2,
+                      fillOpacity: 0.6,
+                      opacity: 1
+                    });
+                    
+                    selectedLayer.on({
+                      click: function() {
+                        checkSelection(selectedCountry, selectedLayer);
+                      },
+                      mouseover: function(e) {
+                        selectedLayer.setStyle({
+                          fillOpacity: 0.8,
+                          weight: 3
+                        });
+                      },
+                      mouseout: function(e) {
+                        selectedLayer.setStyle({
+                          fillOpacity: 0.6,
+                          weight: 2
+                        });
+                      }
+                    });
+                  }
+                  
+                  if (!labelMarkers[selectedCountry]) {
+                    const center = countryLayers[selectedCountry].getBounds().getCenter();
+                    const labelMarker = L.marker(center, {
+                      icon: L.divIcon({
+                        className: 'country-label',
+                        html: `<div class="country-name">${selectedCountry}</div>`,
+                        iconSize: [100, 40],
+                        iconAnchor: [50, 20]
+                      })
+                    }).addTo(map);
+
+                    labelMarkers[selectedCountry] = labelMarker;
+                    labelMarker.on('click', function() {
+                      checkSelection(selectedCountry, countryLayers[selectedCountry]);
+                    });
+                  }
+                  
+                  if (selectedItem) {
+                    selectedItem.classList.remove('correct', 'incorrect', 'temp-disabled');
+                    selectedItem.style.background = '#f0f9f0';
+                  }
+                });
+
+                // Actualizar la siguiente pista SIN mostrar el banner
+                if (currentClueIndex < clues.length) {
+                  // Initialize correctlySelected for the new clue
+                  clues[currentClueIndex].correctlySelected = new Set();
+
+                  // Calculate available countries
+                  const availableCountries = candidates.filter(candidate => 
+                    !disabledCountries.has(candidate.name)
+                  );
+
+                  // Calculate remaining countries
+                  const totalAvailable = availableCountries.length;
+                  const incorrectCountries = clues[currentClueIndex].remove.filter(country => 
+                    availableCountries.some(c => c.name === country)
+                  ).length;
+                  const correctCountries = totalAvailable - incorrectCountries;
+                  
+                  // Update UI
+                  const remainingCount = document.getElementById("remainingCount");
+                  remainingCount.innerHTML = `${correctCountries} países restantes`;
+
+                  const clueContainer = document.getElementById("clueContainer");
+                  const clueText = document.getElementById("clueText");
+                  const clueNumber = document.getElementById("clueNumber");
+
+                  clueContainer.classList.add('new-clue');
+                  clueText.classList.add('new-clue');
+
+                  clueNumber.innerHTML = `Afirmación ${currentClueIndex + 1} de ${clues.length}`;
+                  clueText.innerHTML = clues[currentClueIndex].text;
+
+                  setTimeout(() => {
+                    clueContainer.classList.remove('new-clue');
+                    clueText.classList.remove('new-clue');
+                  }, 1000);
+
+                  vibrate([100, 50, 100]);
+                }
+              }, 2000);
+            }, 3500); // Wait for message to complete
           }
         }
       } else {
         showAnimation('¡Incorrecto! ❌', false);
         
-        // Disable and style the country item in the list
+        // Disable and style the country item
         const countryItem = document.getElementById(`country-item-${country}`);
         if (countryItem) {
           countryItem.classList.add('incorrect');
           countryItem.classList.add('temp-disabled');
-          // Keep the background color
-          countryItem.style.background = '#f0f9f0';
           disabledCountries.add(country);
         }
         
-        // Disable and gray out the map layer
+        // Disable the map layer and make it red
         layer.setStyle({
-          fillOpacity: 0.3,
-          opacity: 0.3
+          fillColor: '#ff3333',
+          fillOpacity: 0.6,
+          color: '#cc0000',
+          weight: 2,
+          opacity: 0.8
         });
         layer.off('click');
         
-        // Disable and gray out the label
+        // Disable the label
         if (labelMarkers[country]) {
           const labelElement = labelMarkers[country].getElement();
           labelElement.classList.add('temp-disabled');
@@ -654,16 +781,18 @@
         }
 
         errorCount++;
-        document.getElementById("errorCount").innerHTML = `${errorCount} fallos`;
+        document.getElementById("errorCount").innerHTML = `${errorCount}/3`;
         
-        if (errorCount >= 5) {
+        // Show explanation for incorrect selection
+        const explanation = clues[currentClueIndex].explanations[country];
+        showMessage(explanation || "¡Error! Este país no cumple la afirmación.", false);
+
+        // Verificar si perdió (3 fallos) antes de continuar con cualquier otra lógica
+        if (errorCount >= 3) {
           // Disable game immediately
           gameActive = false;
           
-          // Show error message first
-          showMessage("¡Error! Este país sí cumple la afirmación.", false);
-          
-          // Wait for the full message duration before starting game over sequence
+          // Wait for the error message to complete before showing game over
           setTimeout(() => {
             const clueContainer = document.getElementById("clueContainer");
             const countriesSidebar = document.querySelector(".countries-sidebar");
@@ -676,12 +805,191 @@
               clueContainer.style.display = "none";
               countriesSidebar.style.display = "none";
               document.getElementById("gameOverModal").style.display = "flex";
-              // Now we can hide the message
-              document.getElementById("message").style.display = "none";
             }, 300);
-          }, 3000);
-        } else {
-          showMessage("¡Error! Este país sí cumple la afirmación.", false);
+          }, 3500); // Esperar a que se complete el mensaje de error
+          
+          return; // Salir de la función sin procesar la lógica de cambio de afirmación
+        }
+
+        // Verificar si todos los países incorrectos han sido seleccionados
+        const availableCountries = candidates.filter(c => !disabledCountries.has(c.name));
+        const remainingIncorrect = clues[currentClueIndex].remove.filter(country => 
+            availableCountries.some(c => c.name === country)
+        );
+
+        if (remainingIncorrect.length === 0) {
+            // Block clicks immediately
+            levelBannerActive = true;
+            currentClueIndex++;
+            
+            if (currentClueIndex >= clues.length) {
+                // Disable game immediately
+                gameActive = false;
+                
+                // First update the final error count
+                document.getElementById("finalErrorCount").innerHTML = errorCount;
+                
+                // Wait for the message to finish before showing the final modal and hiding elements
+                setTimeout(() => {
+                    // Show final modal first
+                    document.getElementById("finalModal").style.display = "flex";
+                    
+                    // Then start the fade out animation for the containers
+                    const clueContainer = document.getElementById("clueContainer");
+                    const countriesSidebar = document.querySelector(".countries-sidebar");
+                    
+                    clueContainer.classList.remove('visible');
+                    countriesSidebar.classList.remove('visible');
+                    
+                    // After animation completes, hide completely
+                    setTimeout(() => {
+                        clueContainer.style.display = "none";
+                        countriesSidebar.style.display = "none";
+                    }, 300);
+                    
+                }, 3500);
+            } else {
+                // Wait for message duration (3000) + animation duration (500) before showing banner
+                setTimeout(() => {
+                    // Show the banner
+                    showLevelBanner(currentClueIndex + 1, clues.length, true);
+                    
+                    // Then process the country updates after banner shows
+                    setTimeout(() => {
+                        // Primero, deshabilitar y marcar en rojo los países que no cumplían la afirmación
+                        clues[currentClueIndex - 1].remove.forEach(countryToDisable => {
+                            // Solo si el país no estaba ya deshabilitado (por un error del usuario)
+                            if (!disabledCountries.has(countryToDisable)) {
+                                const layerToDisable = countryLayers[countryToDisable];
+                                const itemToDisable = document.getElementById(`country-item-${countryToDisable}`);
+                                
+                                // Deshabilitar y marcar en rojo el país en el mapa
+                                if (layerToDisable) {
+                                    layerToDisable.setStyle({
+                                        fillColor: '#ff3333',
+                                        fillOpacity: 0.6,
+                                        color: '#cc0000',
+                                        weight: 2,
+                                        opacity: 0.8
+                                    });
+                                    layerToDisable.off('click mouseover mouseout');
+                                }
+                                
+                                // Deshabilitar y marcar en rojo el país en la lista
+                                if (itemToDisable) {
+                                    itemToDisable.classList.remove('correct'); // Remover la clase correct si existe
+                                    itemToDisable.classList.add('incorrect', 'temp-disabled');
+                                }
+                                
+                                // Deshabilitar la etiqueta del país
+                                if (labelMarkers[countryToDisable]) {
+                                    const labelElement = labelMarkers[countryToDisable].getElement();
+                                    labelElement.classList.add('temp-disabled');
+                                    labelMarkers[countryToDisable].off('click');
+                                }
+                                
+                                disabledCountries.add(countryToDisable);
+                            }
+                        });
+
+                        // Luego reactivar los países correctamente seleccionados
+                        clues[currentClueIndex - 1].correctlySelected.forEach(selectedCountry => {
+                            const selectedLayer = countryLayers[selectedCountry];
+                            const selectedItem = document.getElementById(`country-item-${selectedCountry}`);
+                            
+                            if (selectedLayer) {
+                                const hue = Math.random() * 360;
+                                selectedLayer.setStyle({
+                                    fillColor: `hsl(${hue}, 70%, 85%)`,
+                                    color: '#666',
+                                    weight: 2,
+                                    fillOpacity: 0.6,
+                                    opacity: 1
+                                });
+                                
+                                selectedLayer.on({
+                                    click: function() {
+                                        checkSelection(selectedCountry, selectedLayer);
+                                    },
+                                    mouseover: function(e) {
+                                        selectedLayer.setStyle({
+                                            fillOpacity: 0.8,
+                                            weight: 3
+                                        });
+                                    },
+                                    mouseout: function(e) {
+                                        selectedLayer.setStyle({
+                                            fillOpacity: 0.6,
+                                            weight: 2
+                                        });
+                                    }
+                                });
+                            }
+                            
+                            if (!labelMarkers[selectedCountry]) {
+                                const center = countryLayers[selectedCountry].getBounds().getCenter();
+                                const labelMarker = L.marker(center, {
+                                    icon: L.divIcon({
+                                        className: 'country-label',
+                                        html: `<div class="country-name">${selectedCountry}</div>`,
+                                        iconSize: [100, 40],
+                                        iconAnchor: [50, 20]
+                                    })
+                                }).addTo(map);
+
+                                labelMarkers[selectedCountry] = labelMarker;
+                                labelMarker.on('click', function() {
+                                    checkSelection(selectedCountry, countryLayers[selectedCountry]);
+                                });
+                            }
+                            
+                            if (selectedItem) {
+                                selectedItem.classList.remove('correct', 'incorrect', 'temp-disabled');
+                                selectedItem.style.background = '#f0f9f0';
+                            }
+                        });
+
+                        // Actualizar la siguiente pista SIN mostrar el banner
+                        if (currentClueIndex < clues.length) {
+                            // Initialize correctlySelected for the new clue
+                            clues[currentClueIndex].correctlySelected = new Set();
+
+                            // Calculate available countries
+                            const availableCountries = candidates.filter(candidate => 
+                                !disabledCountries.has(candidate.name)
+                            );
+
+                            // Calculate remaining countries
+                            const totalAvailable = availableCountries.length;
+                            const incorrectCountries = clues[currentClueIndex].remove.filter(country => 
+                                availableCountries.some(c => c.name === country)
+                            ).length;
+                            const correctCountries = totalAvailable - incorrectCountries;
+                            
+                            // Update UI
+                            const remainingCount = document.getElementById("remainingCount");
+                            remainingCount.innerHTML = `${correctCountries} países restantes`;
+
+                            const clueContainer = document.getElementById("clueContainer");
+                            const clueText = document.getElementById("clueText");
+                            const clueNumber = document.getElementById("clueNumber");
+
+                            clueContainer.classList.add('new-clue');
+                            clueText.classList.add('new-clue');
+
+                            clueNumber.innerHTML = `Afirmación ${currentClueIndex + 1} de ${clues.length}`;
+                            clueText.innerHTML = clues[currentClueIndex].text;
+
+                            setTimeout(() => {
+                                clueContainer.classList.remove('new-clue');
+                                clueText.classList.remove('new-clue');
+                            }, 1000);
+
+                            vibrate([100, 50, 100]);
+                        }
+                    }, 2000);
+                }, 3500); // Wait for message to complete
+            }
         }
       }
     }
@@ -776,7 +1084,7 @@
       countriesSidebar.classList.add('visible');
       
       // Reset error counter display
-      document.getElementById("errorCount").innerHTML = "0 fallos";
+      document.getElementById("errorCount").innerHTML = "0/3";
       
       // Clear disabled states
       disabledCountries.clear();
