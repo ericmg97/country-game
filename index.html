@@ -652,6 +652,14 @@
       </div>
     </div>
   </div>
+  <div class="modal-overlay" id="gameOverModal" style="display: none;">
+    <div class="final-modal">
+      <h2 style="color: #ff3333;">¡Game Over! 😢</h2>
+      <p>Has cometido 5 errores.</p>
+      <p>¿Quieres intentarlo de nuevo?</p>
+      <button class="start-button" onclick="restartGame()">Reintentar</button>
+    </div>
+  </div>
   <script>
     var clues = [
       { 
@@ -748,6 +756,7 @@
     var errorCount = 0;
     var isProcessing = false;
     var messageTimeout = null;
+    var gameActive = true;
 
     function vibrate(pattern) {
       if (navigator.vibrate) {
@@ -757,6 +766,9 @@
 
     function startGame() {
       document.getElementById('instructionsModal').style.display = 'none';
+      
+      // Enable game
+      gameActive = true;
       
       // Show the clue container and sidebar with animation
       const clueContainer = document.getElementById('clueContainer');
@@ -986,7 +998,7 @@
     }
 
     function checkSelection(country, layer) {
-      if (isProcessing) return;
+      if (isProcessing || !gameActive) return;
       isProcessing = true;
 
       // Create celebration effect function
@@ -1058,6 +1070,9 @@
         if (clues[currentClueIndex].remove.length === 0) {
           currentClueIndex++;
           if (currentClueIndex >= clues.length) {
+            // Disable game immediately
+            gameActive = false;
+            
             // First update the final error count
             document.getElementById("finalErrorCount").innerHTML = errorCount;
             
@@ -1079,7 +1094,7 @@
                 countriesSidebar.style.display = "none";
               }, 300);
               
-            }, 4500); // Wait for message display (4000) + animation (500)
+            }, 4500);
           } else {
             updateClue();
           }
@@ -1087,7 +1102,6 @@
       } else {
         showAnimation('¡Incorrecto! ❌', false);
         
-        // Add and remove the incorrect animation class
         const countryItem = document.getElementById(`country-item-${country}`);
         if (countryItem) {
           countryItem.classList.add('incorrect');
@@ -1098,9 +1112,127 @@
 
         errorCount++;
         document.getElementById("errorCount").innerHTML = `${errorCount} fallos`;
-        showMessage("¡Error! Este país sí cumple la afirmación.", false);
+        
+        if (errorCount >= 5) {
+          // Disable game immediately
+          gameActive = false;
+          
+          // Show error message first
+          showMessage("¡Error! Este país sí cumple la afirmación.", false);
+          
+          // Wait for the full message duration before starting game over sequence
+          setTimeout(() => {
+            const clueContainer = document.getElementById("clueContainer");
+            const countriesSidebar = document.querySelector(".countries-sidebar");
+            
+            clueContainer.classList.remove('visible');
+            countriesSidebar.classList.remove('visible');
+            
+            // After fade-out animation, show game over modal
+            setTimeout(() => {
+              clueContainer.style.display = "none";
+              countriesSidebar.style.display = "none";
+              document.getElementById("gameOverModal").style.display = "flex";
+              // Now we can hide the message
+              document.getElementById("message").style.display = "none";
+            }, 300);
+          }, 4000);
+        } else {
+          showMessage("¡Error! Este país sí cumple la afirmación.", false);
+        }
       }
     }
+
+    // Add these new functions after the startGame function
+    function restartGame() {
+      // Hide game over modal
+      document.getElementById('gameOverModal').style.display = 'none';
+      
+      // Enable game
+      gameActive = true;
+      
+      // Reset the game state
+      currentClueIndex = 0;
+      errorCount = 0;
+      
+      // Reset all countries
+      candidates.forEach(candidate => {
+        const layer = countryLayers[candidate.name];
+        if (layer) {
+          layer.setStyle({
+            fillColor: `hsl(${Math.random() * 360}, 70%, 85%)`,
+            fillOpacity: 0.6,
+            color: '#666',
+            weight: 2
+          });
+          
+          // Re-attach event listeners
+          layer.on({
+            click: function() {
+              checkSelection(candidate.name, layer);
+            },
+            mouseover: function(e) {
+              layer.setStyle({
+                fillOpacity: 0.8,
+                weight: 3
+              });
+            },
+            mouseout: function(e) {
+              layer.setStyle({
+                fillOpacity: 0.6,
+                weight: 2
+              });
+            }
+          });
+        }
+        
+        // Restore label if it was removed
+        if (!labelMarkers[candidate.name]) {
+          const center = countryLayers[candidate.name].getBounds().getCenter();
+          const labelMarker = L.marker(center, {
+            icon: L.divIcon({
+              className: 'country-label',
+              html: `<div class="country-name">${candidate.name}</div>`,
+              iconSize: [100, 40],
+              iconAnchor: [50, 20]
+            })
+          }).addTo(map);
+
+          labelMarkers[candidate.name] = labelMarker;
+          labelMarker.on('click', function() {
+            checkSelection(candidate.name, countryLayers[candidate.name]);
+          });
+        }
+      });
+      
+      // Reset clues
+      clues.forEach(clue => {
+        clue.remove = [...clue.originalRemove];
+      });
+      
+      // Show UI elements
+      const clueContainer = document.getElementById('clueContainer');
+      const countriesSidebar = document.querySelector('.countries-sidebar');
+      
+      clueContainer.style.display = '';
+      countriesSidebar.style.display = '';
+      clueContainer.classList.add('visible');
+      countriesSidebar.classList.add('visible');
+      
+      // Reset error counter display
+      document.getElementById("errorCount").innerHTML = "0 fallos";
+      
+      // Recreate countries list
+      createCountriesList();
+      
+      // Update first clue
+      updateClue();
+    }
+
+    // Add this right after the clues array definition to store original remove arrays
+    clues.forEach(clue => {
+      clue.originalRemove = [...clue.remove];
+    });
   </script>
 </body>
 </html>
