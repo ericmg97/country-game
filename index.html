@@ -498,6 +498,51 @@
       }, 3000);
     }
 
+    function createConfetti(isVictory = true) {
+        const container = document.createElement('div');
+        container.className = 'confetti-container';
+        document.body.appendChild(container);
+
+        const colors = isVictory ? 
+            ['#4CAF50', '#45a049', '#gold', '#white', '#yellow'] : 
+            ['#ff3333', '#cc0000', '#black', '#gray', '#darkred'];
+
+        const confettiCount = 150;
+        const gravity = 1;
+        const terminalVelocity = 5;
+        const drag = 0.075;
+
+        for (let i = 0; i < confettiCount; i++) {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.left = Math.random() * 100 + '%';
+            confetti.style.animation = `${isVictory ? 'confettiFall' : 'gameOverFall'} ${3 + Math.random() * 2}s linear forwards`;
+            confetti.style.animationDelay = Math.random() * 3 + 's';
+
+            // Tamaño aleatorio
+            const size = Math.random() * 10 + 5;
+            confetti.style.width = `${size}px`;
+            confetti.style.height = `${size}px`;
+
+            // Forma aleatoria
+            if (Math.random() > 0.5) {
+                confetti.style.borderRadius = '50%';
+            } else {
+                confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+            }
+
+            container.appendChild(confetti);
+        }
+
+        // Limpiar el confeti después de la animación
+        setTimeout(() => {
+            if (container && container.parentNode) {
+                container.parentNode.removeChild(container);
+            }
+        }, 5000);
+    }
+
     function checkSelection(country, layer) {
       if (isProcessing || !gameActive || disabledCountries.has(country) || levelBannerActive) return;
       isProcessing = true;
@@ -592,6 +637,9 @@
             
             // Wait for the message to finish before showing the final modal and hiding elements
             setTimeout(() => {
+              // Mostrar el confeti de victoria
+              createConfetti(true);
+              
               // Show final modal first
               document.getElementById("finalModal").style.display = "flex";
               
@@ -794,6 +842,9 @@
           
           // Wait for the error message to complete before showing game over
           setTimeout(() => {
+            // Mostrar el confeti de derrota
+            createConfetti(false);
+            
             const clueContainer = document.getElementById("clueContainer");
             const countriesSidebar = document.querySelector(".countries-sidebar");
             
@@ -806,7 +857,7 @@
               countriesSidebar.style.display = "none";
               document.getElementById("gameOverModal").style.display = "flex";
             }, 300);
-          }, 3500); // Esperar a que se complete el mensaje de error
+          }, 3500);
           
           return; // Salir de la función sin procesar la lógica de cambio de afirmación
         }
@@ -831,6 +882,9 @@
                 
                 // Wait for the message to finish before showing the final modal and hiding elements
                 setTimeout(() => {
+                    // Mostrar el confeti de victoria
+                    createConfetti(true);
+                    
                     // Show final modal first
                     document.getElementById("finalModal").style.display = "flex";
                     
