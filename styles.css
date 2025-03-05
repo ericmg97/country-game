@@ -215,12 +215,11 @@ button {
 .message-container {
     position: fixed;
     top: calc(20px + 100px);
-    /* Closer to clue container */
     left: 50%;
     transform: translateX(-50%);
     background: rgba(255, 255, 255, 0.95);
     padding: 10px 20px;
-    border-radius: 10px;
+    border-radius: 15px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     z-index: 1000;
     text-align: center;
@@ -229,10 +228,15 @@ button {
     display: none;
     animation: slideInDown 0.3s ease-out;
     transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+    border: 2px solid #4CAF50;
 }
 
 .message-container.hiding {
     animation: slideOutUp 0.3s ease-in forwards;
+}
+
+.message-container.error-message {
+    border-color: #ff3333;
 }
 
 .success-message {
@@ -414,11 +418,28 @@ button {
     }
 
     .message-container {
-        top: calc(10px + 130px);
-        /* Closer to mobile clue container */
-        min-width: 85%;
-        padding: 15px 20px;
-        font-size: 18px;
+        position: fixed;
+        top: auto;
+        bottom: 120px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 85%;
+        padding: 5px;
+        font-size: 14px;
+        z-index: 1002;
+        background: rgba(255, 255, 255, 0.98);
+        border-radius: 15px;
+        border: 2px solid #4CAF50;
+    }
+
+    .message-container.error-message {
+        border-color: #ff3333;
+    }
+
+    .success-message,
+    .error-message {
+        padding: 8px;
+        font-size: 14px;
     }
 
     .country-label div {
@@ -479,47 +500,63 @@ button {
         position: fixed;
         top: auto;
         bottom: 5px;
-        /* Cambiado de 20px a 5px para ponerlo más abajo */
         left: 50%;
         transform: translateX(-50%);
         width: 85%;
-        max-height: 120px;
-        /* Reducido de 150px a 120px */
+        max-height: none;
         display: flex;
         flex-direction: column;
         background: rgba(255, 255, 255, 0.98);
         z-index: 1001;
-        padding: 10px;
-        /* Reducido el padding */
+        padding: 5px;
+    }
+
+    .sidebar-title {
+        display: none;
     }
 
     .countries-list {
         display: flex;
         flex-wrap: wrap;
-        gap: 8px;
+        gap: 4px;
         justify-content: center;
-        padding-bottom: 5px;
-        /* Add some padding at the bottom */
+        padding: 5px;
     }
 
     .country-item {
-        font-size: 14px;
-        padding: 6px 10px;
+        font-size: 12px;
+        padding: 4px 8px;
         margin: 0;
-        /* Remove vertical margins */
     }
 
-    /* Add some bottom padding to the map container to prevent the list from covering the bottom of the map */
+    /* Adjust map padding to accommodate the list */
     #map {
-        padding-bottom: 130px;
-        /* Ajustado para el nuevo tamaño */
+        padding-bottom: 180px;
     }
 
-    .sidebar-title {
-        font-size: 14px;
-        /* Reducido el tamaño del título */
-        margin-bottom: 5px;
-        /* Menos espacio debajo del título */
+    /* Update animations for bottom positioning */
+    @keyframes slideInDown {
+        from {
+            transform: translate(-50%, 20px);
+            opacity: 0;
+        }
+    
+        to {
+            transform: translate(-50%, 0);
+            opacity: 1;
+        }
+    }
+    
+    @keyframes slideOutUp {
+        from {
+            transform: translate(-50%, 0);
+            opacity: 1;
+        }
+    
+        to {
+            transform: translate(-50%, 20px);
+            opacity: 0;
+        }
     }
 }
 
@@ -543,20 +580,26 @@ button {
     }
 
     .countries-sidebar {
-        bottom: 2px;
-        /* Aún más abajo para pantallas pequeñas */
-        max-height: 100px;
-        /* Altura máxima más pequeña */
+        padding: 3px;
+    }
+
+    .countries-list {
+        gap: 3px;
     }
 
     .country-item {
-        font-size: 12px;
-        padding: 4px 8px;
+        font-size: 11px;
+        padding: 3px 6px;
     }
 
     #map {
-        padding-bottom: 110px;
-        /* Ajustado para pantallas pequeñas */
+        padding-bottom: 200px;
+    }
+
+    .message-container {
+        bottom: 140px;
+        font-size: 13px;
+        padding: 3px;
     }
 }
 
@@ -631,33 +674,45 @@ button {
         position: fixed;
         top: auto;
         bottom: 5px;
-        /* Cambiado de 20px a 5px para ponerlo más abajo */
         left: 50%;
         transform: translateX(-50%);
         width: 85%;
-        max-height: 120px;
-        /* Reducido de 150px a 120px */
+        max-height: none;
         display: flex;
         flex-direction: column;
+        background: rgba(255, 255, 255, 0.98);
+        z-index: 1001;
+        padding: 5px;
+    }
+
+    .sidebar-title {
+        display: none;
     }
 
     .countries-list {
         display: flex;
         flex-wrap: wrap;
-        gap: 8px;
+        gap: 4px;
         justify-content: center;
+        padding: 5px;
     }
 
     .country-item {
-        font-size: 14px;
-        padding: 6px 10px;
+        font-size: 12px;
+        padding: 4px 8px;
+        margin: 0;
+    }
+
+    /* Adjust map padding to accommodate the list */
+    #map {
+        padding-bottom: 180px;
     }
 }
 
 /* Add these new animations to your CSS section */
 @keyframes slideInDown {
     from {
-        transform: translate(-50%, -20px);
+        transform: translate(-50%, 20px);
         opacity: 0;
     }
 
@@ -674,13 +729,12 @@ button {
     }
 
     to {
-        transform: translate(-50%, -20px);
+        transform: translate(-50%, 20px);
         opacity: 0;
     }
 }
 
 @keyframes shakeItem {
-
     0%,
     100% {
         transform: translateX(0);
