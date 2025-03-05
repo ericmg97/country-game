@@ -65,12 +65,10 @@
             <div class="final-country" onclick="showCountryImage('Finlandia')">
               <span class="country-emoji">🇫🇮</span>
               <span class="country-name">Finlandia</span>
-              <img src="Finlandia.png" class="country-popup" alt="Finlandia">
       </div>
             <div class="final-country" onclick="showCountryImage('Estonia')">
               <span class="country-emoji">🇪🇪</span>
               <span class="country-name">Estonia</span>
-              <img src="Estonia.png" class="country-popup" alt="Estonia">
     </div>
           </div>
         </div>
@@ -94,6 +92,23 @@
   <div class="level-banner" id="levelBanner">
     <h2>¡Afirmación 1 de 7! 🎯</h2>
     <p>¡Comencemos!</p>
+  </div>
+  <div class="destination-reveal">
+    <p class="reveal-text">Tu destino sorpresa... <strong>no es solo uno!</strong></p>
+    <div class="final-countries">
+      <div class="final-country" onclick="showCountryImage('Finlandia')">
+        <span class="country-emoji">🇫🇮</span>
+        <span class="country-name">Finlandia</span>
+      </div>
+      <div class="final-country" onclick="showCountryImage('Estonia')">
+        <span class="country-emoji">🇪🇪</span>
+        <span class="country-name">Estonia</span>
+      </div>
+    </div>
+  </div>
+  <div id="imagePopupContainer">
+    <img src="Finlandia.png" class="country-popup" alt="Finlandia">
+    <img src="Estonia.png" class="country-popup" alt="Estonia">
   </div>
   <script>
     var clues = [
@@ -1235,31 +1250,28 @@
     });
 
     function showCountryImage(country) {
-      const img = document.querySelector(`.final-country img[alt="${country}"]`);
-      if (img) {
-        img.classList.add('show');
-        
-        // Add click event listener to the document
-        const handleClickOutside = (event) => {
-          // Check if the click was outside the image
-          if (!event.target.closest('.country-popup')) {
-            img.classList.remove('show');
-            // Remove the event listener after hiding the image
-            document.removeEventListener('click', handleClickOutside);
-          }
-        };
-        
-        // Add the event listener with a small delay to prevent immediate triggering
-        setTimeout(() => {
-          document.addEventListener('click', handleClickOutside);
-        }, 100);
-        
-        // Still keep the automatic timeout as fallback
-        setTimeout(() => {
-          img.classList.remove('show');
-          document.removeEventListener('click', handleClickOutside);
-        }, 5000);
-      }
+        const img = document.querySelector(`#imagePopupContainer img[alt="${country}"]`);
+        if (img) {
+            img.classList.add('show');
+            
+            const handleClickOutside = (event) => {
+                if (img.classList.contains('show')) {
+                    img.classList.remove('show');
+                    document.removeEventListener('click', handleClickOutside);
+                }
+            };
+            
+            setTimeout(() => {
+                document.addEventListener('click', handleClickOutside);
+            }, 100);
+            
+            setTimeout(() => {
+                if (img.classList.contains('show')) {
+                    img.classList.remove('show');
+                    document.removeEventListener('click', handleClickOutside);
+                }
+            }, 5000);
+        }
     }
   </script>
 </body>
