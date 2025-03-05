@@ -45,7 +45,7 @@
           
           <p class="highlight-text">Al final del juego, ¡solo quedará tu destino sorpresa! 🎉</p>
           
-          <p class="warning-text">⚠️ Importante: Con más de 3 fallos, se cancela automáticamente la reserva.</p>
+          <p class="warning-text">⚠️ Importante: Con 3 fallos, se cancela automáticamente la reserva.</p>
         </div>
       </div>
       
@@ -366,8 +366,9 @@
         banner.innerHTML = `
             <h2>¡Afirmación ${level} de ${total}! 🎯</h2>
             <p>${byElimination ? 
-                '¡Has pasado por descarte! 🤔 La próxima intenta ser menos tonto 🫣' : 
-                (level === 1 ? '¡Comencemos!' : '¡Excelente progreso!')}</p>
+                '¡Has avanzado por eliminación! 🤔 La próxima vez intenta identificar los países correctos primero 😉' : 
+                (level === 1 ? '¡Comencemos!' : '¡Excelente progreso!')}
+            </p>
         `;
 
         // Show the banner
