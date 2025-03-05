@@ -309,10 +309,12 @@ button {
     flex-direction: column;
     gap: 10px;
     transition: transform 0.3s ease;
+    position: relative;
+    cursor: pointer;
 }
 
 .final-country:hover {
-    transform: translateY(-5px);
+    transform: translateY(-5px) scale(1.05);
 }
 
 .country-emoji {
@@ -939,7 +941,7 @@ button {
 }
 
 .level-banner.show {
-    animation: showLevelBanner 2s ease-in-out forwards;
+    animation: showLevelBanner var(--banner-duration, 2.5s) ease-in-out forwards;
 }
 
 @keyframes showLevelBanner {
@@ -947,15 +949,15 @@ button {
         transform: translate(-50%, -50%) scale(0);
         opacity: 0;
     }
-    20% {
+    15% {
         transform: translate(-50%, -50%) scale(1.1);
         opacity: 1;
     }
-    30% {
+    25% {
         transform: translate(-50%, -50%) scale(1);
         opacity: 1;
     }
-    80% {
+    90% {
         transform: translate(-50%, -50%) scale(1);
         opacity: 1;
     }
@@ -1029,4 +1031,33 @@ button {
         transform: translateY(100vh) rotate(720deg);
         opacity: 0;
     }
+}
+
+.final-country {
+    position: relative;
+    cursor: pointer;
+}
+
+.country-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    max-width: 90vw;
+    max-height: 90vh;
+    object-fit: contain;
+    z-index: 3000;
+    opacity: 0;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.country-popup.show {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+}
+
+/* Add a subtle hover effect to indicate clickability */
+.final-country:hover {
+    transform: translateY(-5px) scale(1.05);
 }

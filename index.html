@@ -35,7 +35,7 @@
         <p class="main-description">Se te presentarán varias afirmaciones sobre países.</p>
         
         <div class="instructions-list">
-          <p><strong>Tu objetivo:</strong> Identificar y hacer clic en los países que cumplen con la afirmación mostrada.</p>
+          <p><strong>Tu objetivo:</strong> Identificar y seleccionar los países que cumplen con la afirmación mostrada.</p>
           
           <ul>
             <li>Puedes hacer clic en el país directamente en el mapa o en su nombre en la lista a la izquierda para seleccionarlo</li>
@@ -60,15 +60,17 @@
         <p class="victory-message">Eres un as de la geopolítica! Pero eso ya lo sabíamos 😊</p>
         
         <div class="destination-reveal">
-          <p class="reveal-text">Tu destino sorpresa son <strong>dos destinos</strong>:</p>
+          <p class="reveal-text">Tu destino sorpresa... <strong>no es solo uno!</strong></p>
       <div class="final-countries">
-            <div class="final-country">
+            <div class="final-country" onclick="showCountryImage('Finlandia')">
               <span class="country-emoji">🇫🇮</span>
               <span class="country-name">Finlandia</span>
+              <img src="Finlandia.png" class="country-popup" alt="Finlandia">
       </div>
-            <div class="final-country">
+            <div class="final-country" onclick="showCountryImage('Estonia')">
               <span class="country-emoji">🇪🇪</span>
               <span class="country-name">Estonia</span>
+              <img src="Estonia.png" class="country-popup" alt="Estonia">
     </div>
           </div>
         </div>
@@ -336,6 +338,9 @@
         levelBannerActive = true;
         
         let banner = document.getElementById('levelBanner');
+        // Set the animation duration based on the type
+        banner.style.setProperty('--banner-duration', byElimination ? '4s' : '2.5s');
+
         if (!banner) {
             banner = document.createElement('div');
             banner.id = 'levelBanner';
@@ -367,7 +372,7 @@
         window.levelBannerTimeout = setTimeout(() => {
             levelBannerActive = false;
             banner.classList.remove('show');
-        }, byElimination ? 5000 : 2500); // Más tiempo si es por descarte
+        }, byElimination ? 4000 : 2500); // Más tiempo si es por descarte
     }
 
     function updateClue() {
@@ -1228,6 +1233,34 @@
     clues.forEach(clue => {
       clue.originalRemove = [...clue.remove];
     });
+
+    function showCountryImage(country) {
+      const img = document.querySelector(`.final-country img[alt="${country}"]`);
+      if (img) {
+        img.classList.add('show');
+        
+        // Add click event listener to the document
+        const handleClickOutside = (event) => {
+          // Check if the click was outside the image
+          if (!event.target.closest('.country-popup')) {
+            img.classList.remove('show');
+            // Remove the event listener after hiding the image
+            document.removeEventListener('click', handleClickOutside);
+          }
+        };
+        
+        // Add the event listener with a small delay to prevent immediate triggering
+        setTimeout(() => {
+          document.addEventListener('click', handleClickOutside);
+        }, 100);
+        
+        // Still keep the automatic timeout as fallback
+        setTimeout(() => {
+          img.classList.remove('show');
+          document.removeEventListener('click', handleClickOutside);
+        }, 5000);
+      }
+    }
   </script>
 </body>
 </html>
