@@ -89,6 +89,10 @@
       </div>
     </div>
   </div>
+  <div class="level-banner" id="levelBanner">
+    <h2>¡Afirmación 1 de 7! 🎯</h2>
+    <p>¡Comencemos!</p>
+  </div>
   <script>
     var clues = [
       { 
@@ -191,6 +195,9 @@
     // Add this variable with other global variables
     var disabledCountries = new Set();
 
+    // Añadir esta variable con las otras variables globales
+    var levelBannerActive = false;
+
     function vibrate(pattern) {
       if (navigator.vibrate) {
         navigator.vibrate(pattern);
@@ -248,8 +255,44 @@
       updateClue();
     }
 
+    function showLevelBanner(level, total) {
+        // Bloquear interacciones
+        levelBannerActive = true;
+        
+        // Crear el banner si no existe
+        let banner = document.getElementById('levelBanner');
+        if (!banner) {
+            banner = document.createElement('div');
+            banner.id = 'levelBanner';
+            banner.className = 'level-banner';
+            document.body.appendChild(banner);
+        }
+
+        // Actualizar el contenido
+        banner.innerHTML = `
+            <h2>¡Afirmación ${level} de ${total}! 🎯</h2>
+            <p>${level === 1 ? '¡Comencemos!' : '¡Excelente progreso!'}</p>
+        `;
+
+        // Mostrar el banner
+        banner.classList.remove('show');
+        void banner.offsetWidth; // Forzar reflow
+        banner.classList.add('show');
+
+        // Vibración para feedback táctil
+        vibrate([100, 50, 100]);
+        
+        // Desbloquear interacciones después de la animación
+        setTimeout(() => {
+            levelBannerActive = false;
+        }, 2000); // Mismo tiempo que la duración de la animación del banner
+    }
+
     function updateClue() {
       if (currentClueIndex < clues.length) {
+        // Mostrar el banner de nivel
+        showLevelBanner(currentClueIndex + 1, clues.length);
+        
         // Enable all countries for the new clue
         disabledCountries.clear();
         
@@ -476,7 +519,8 @@
     }
 
     function checkSelection(country, layer) {
-      if (isProcessing || !gameActive || messageActive || disabledCountries.has(country)) return;
+      // Añadir levelBannerActive a las condiciones de bloqueo
+      if (isProcessing || !gameActive || messageActive || disabledCountries.has(country) || levelBannerActive) return;
       isProcessing = true;
 
       // Create celebration effect function
