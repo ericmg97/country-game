@@ -967,7 +967,13 @@
         );
 
         if (remainingIncorrect.length === 0) {
-            // Block clicks immediately
+            // Solo permitir avanzar por descarte en todas las afirmaciones excepto la última
+            if (currentClueIndex === clues.length - 1) {
+                // En la última afirmación, no hacer nada si no se han seleccionado todos los países correctos
+                return;
+            }
+            
+            // Para el resto de afirmaciones, mantener la lógica actual de avanzar por descarte
             levelBannerActive = true;
             currentClueIndex++;
             
