@@ -1058,11 +1058,27 @@
         if (clues[currentClueIndex].remove.length === 0) {
           currentClueIndex++;
           if (currentClueIndex >= clues.length) {
-            // Wait for the message to finish before showing the final modal
+            // First update the final error count
+            document.getElementById("finalErrorCount").innerHTML = errorCount;
+            
+            // Wait for the message to finish before showing the final modal and hiding elements
             setTimeout(() => {
+              // Show final modal first
               document.getElementById("finalModal").style.display = "flex";
-              document.getElementById("clueContainer").style.display = "none";
-              document.getElementById("finalErrorCount").innerHTML = errorCount;
+              
+              // Then start the fade out animation for the containers
+              const clueContainer = document.getElementById("clueContainer");
+              const countriesSidebar = document.querySelector(".countries-sidebar");
+              
+              clueContainer.classList.remove('visible');
+              countriesSidebar.classList.remove('visible');
+              
+              // After animation completes, hide completely
+              setTimeout(() => {
+                clueContainer.style.display = "none";
+                countriesSidebar.style.display = "none";
+              }, 300);
+              
             }, 4500); // Wait for message display (4000) + animation (500)
           } else {
             updateClue();
