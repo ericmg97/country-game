@@ -1,0 +1,886 @@
+html,
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+#map {
+    height: 100vh;
+    width: 100vw;
+}
+
+.sidebar {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: white;
+    padding: 15px;
+    z-index: 1000;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    max-width: 300px;
+}
+
+button {
+    margin-top: 5px;
+}
+
+.error {
+    color: red;
+    font-weight: bold;
+}
+
+.country-boundary {
+    fill: none;
+    stroke: #232323;
+    stroke-width: 1;
+    stroke-linejoin: round;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.modal {
+    background: white;
+    padding: 40px;
+    border-radius: 15px;
+    max-width: 600px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.modal h2 {
+    color: #4CAF50;
+    margin-bottom: 25px;
+    font-size: 24px;
+    line-height: 1.3;
+}
+
+.instructions-content {
+    text-align: left;
+    margin: 20px 0;
+}
+
+.main-description {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.instructions-list {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    margin: 15px 0;
+}
+
+.instructions-list ul {
+    padding-left: 20px;
+    margin: 15px 0;
+}
+
+.instructions-list li {
+    margin-bottom: 12px;
+    color: #444;
+    line-height: 1.4;
+}
+
+.highlight-text {
+    font-size: 18px;
+    color: #4CAF50;
+    margin: 20px 0;
+    text-align: center;
+    font-weight: bold;
+}
+
+.warning-text {
+    color: #ff3333;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 20px;
+    padding: 10px;
+    border: 2px solid #ff3333;
+    border-radius: 8px;
+    background: rgba(255, 51, 51, 0.05);
+}
+
+.start-button {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 8px;
+    font-size: 18px;
+    cursor: pointer;
+    margin-top: 25px;
+    transition: all 0.3s ease;
+}
+
+.start-button:hover {
+    background: #45a049;
+    transform: scale(1.05);
+}
+
+@keyframes celebrate {
+    0% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: translate(-50%, -100%) scale(1.5);
+        opacity: 0.5;
+    }
+
+    100% {
+        transform: translate(-50%, -150%) scale(2);
+        opacity: 0;
+    }
+}
+
+.celebration {
+    position: fixed;
+    pointer-events: none;
+    font-size: 24px;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    animation: celebrate 1s ease-out forwards;
+    z-index: 2000;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.celebration.success {
+    color: #4CAF50;
+}
+
+.celebration.error {
+    color: #ff3333;
+}
+
+.clue-container {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.95);
+    padding: 15px 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    text-align: center;
+    min-width: 300px;
+    backdrop-filter: blur(5px);
+    border: 2px solid #4CAF50;
+    transition: all 0.3s ease;
+}
+
+.clue-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #666;
+}
+
+.remaining-countries {
+    background: #4CAF50;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.clue-text {
+    font-size: 18px;
+    color: #333;
+    font-weight: 500;
+    padding: 5px 0;
+}
+
+.message-container {
+    position: fixed;
+    top: calc(20px + 100px);
+    /* Closer to clue container */
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.95);
+    padding: 10px 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    text-align: center;
+    min-width: 200px;
+    backdrop-filter: blur(5px);
+    display: none;
+    animation: slideInDown 0.3s ease-out;
+    transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+}
+
+.message-container.hiding {
+    animation: slideOutUp 0.3s ease-in forwards;
+}
+
+.success-message {
+    color: #4CAF50;
+    font-weight: bold;
+}
+
+.error-message {
+    color: #ff3333;
+    font-weight: bold;
+}
+
+.final-modal {
+    background: white;
+    padding: 40px;
+    border-radius: 15px;
+    max-width: 500px;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 0.5s ease-out;
+}
+
+.final-modal h2 {
+    color: #4CAF50;
+    margin-bottom: 30px;
+    font-size: 32px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.victory-content {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.victory-message {
+    font-size: 22px;
+    color: #333;
+    line-height: 1.4;
+}
+
+.destination-reveal {
+    background: #f8f9fa;
+    padding: 25px;
+    border-radius: 15px;
+    margin: 10px 0;
+}
+
+.reveal-text {
+    font-size: 20px;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.final-countries {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin: 25px 0;
+}
+
+.final-country {
+    background: linear-gradient(145deg, #ffffff, #f0f9f0);
+    padding: 20px 30px;
+    border-radius: 15px;
+    font-weight: bold;
+    color: #4CAF50;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: transform 0.3s ease;
+}
+
+.final-country:hover {
+    transform: translateY(-5px);
+}
+
+.country-emoji {
+    font-size: 40px;
+}
+
+.country-name {
+    font-size: 20px;
+}
+
+.error-summary {
+    font-size: 18px;
+    color: #666;
+    margin-top: 20px;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.error-counter {
+    background: #ff3333;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: bold;
+    font-size: 12px;
+    margin-left: 8px;
+}
+
+@keyframes clueFlash {
+    0% {
+        transform: translateX(-50%) scale(1);
+        background: rgba(255, 255, 255, 0.95);
+    }
+
+    50% {
+        transform: translateX(-50%) scale(1.02);
+        background: rgba(76, 175, 80, 0.2);
+    }
+
+    100% {
+        transform: translateX(-50%) scale(1);
+        background: rgba(255, 255, 255, 0.95);
+    }
+}
+
+@keyframes textFadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.clue-container.animate {
+    animation: clueFlash 0.5s ease-out;
+    transform-origin: center;
+}
+
+.clue-text.animate {
+    animation: textFadeIn 0.5s ease-out;
+}
+
+@media (max-width: 768px) {
+    .clue-container {
+        min-width: 85%;
+        padding: 20px;
+        top: 10px;
+    }
+
+    .clue-text {
+        font-size: 22px;
+        line-height: 1.4;
+        padding: 10px 0;
+    }
+
+    .clue-info {
+        font-size: 16px;
+        margin-bottom: 15px;
+    }
+
+    .remaining-countries {
+        font-size: 14px;
+        padding: 4px 12px;
+    }
+
+    .error-counter {
+        font-size: 14px;
+        padding: 4px 12px;
+    }
+
+    .message-container {
+        top: calc(10px + 130px);
+        /* Closer to mobile clue container */
+        min-width: 85%;
+        padding: 15px 20px;
+        font-size: 18px;
+    }
+
+    .country-label div {
+        font-size: 18px;
+        width: 120px;
+        text-shadow:
+            3px 3px 3px white,
+            -3px 3px 3px white,
+            3px -3px 3px white,
+            -3px -3px 3px white;
+    }
+
+    .celebration {
+        font-size: 32px;
+    }
+
+    /* Estilos para modales en móvil */
+    .modal {
+        width: 85%;
+        padding: 25px;
+        margin: 20px;
+    }
+
+    .modal ul {
+        padding-left: 20px;
+    }
+
+    .modal li {
+        font-size: 16px;
+        margin-bottom: 10px;
+    }
+
+    .start-button {
+        font-size: 18px;
+        padding: 15px 30px;
+    }
+
+    .final-modal {
+        width: 85%;
+        padding: 30px;
+    }
+
+    .final-modal h2 {
+        font-size: 26px;
+    }
+
+    .final-modal p {
+        font-size: 20px;
+    }
+
+    .final-country {
+        font-size: 18px;
+        padding: 12px 24px;
+    }
+
+    /* Update the mobile styles for the countries sidebar */
+    .countries-sidebar {
+        position: fixed;
+        top: auto;
+        bottom: 5px;
+        /* Cambiado de 20px a 5px para ponerlo más abajo */
+        left: 50%;
+        transform: translateX(-50%);
+        width: 85%;
+        max-height: 120px;
+        /* Reducido de 150px a 120px */
+        display: flex;
+        flex-direction: column;
+        background: rgba(255, 255, 255, 0.98);
+        z-index: 1001;
+        padding: 10px;
+        /* Reducido el padding */
+    }
+
+    .countries-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: center;
+        padding-bottom: 5px;
+        /* Add some padding at the bottom */
+    }
+
+    .country-item {
+        font-size: 14px;
+        padding: 6px 10px;
+        margin: 0;
+        /* Remove vertical margins */
+    }
+
+    /* Add some bottom padding to the map container to prevent the list from covering the bottom of the map */
+    #map {
+        padding-bottom: 130px;
+        /* Ajustado para el nuevo tamaño */
+    }
+
+    .sidebar-title {
+        font-size: 14px;
+        /* Reducido el tamaño del título */
+        margin-bottom: 5px;
+        /* Menos espacio debajo del título */
+    }
+}
+
+/* Additional adjustments for very small screens */
+@media (max-width: 360px) {
+    .clue-text {
+        font-size: 20px;
+    }
+
+    .country-label div {
+        font-size: 16px;
+        width: 100px;
+    }
+
+    .modal {
+        padding: 20px;
+    }
+
+    .modal li {
+        font-size: 14px;
+    }
+
+    .countries-sidebar {
+        bottom: 2px;
+        /* Aún más abajo para pantallas pequeñas */
+        max-height: 100px;
+        /* Altura máxima más pequeña */
+    }
+
+    .country-item {
+        font-size: 12px;
+        padding: 4px 8px;
+    }
+
+    #map {
+        padding-bottom: 110px;
+        /* Ajustado para pantallas pequeñas */
+    }
+}
+
+.countries-sidebar {
+    position: fixed;
+    top: 50%;
+    left: 20px;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.95);
+    padding: 15px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    backdrop-filter: blur(5px);
+    border: 2px solid #4CAF50;
+    max-height: 70vh;
+    overflow-y: auto;
+    width: 200px;
+}
+
+.countries-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.country-item {
+    padding: 8px 12px;
+    margin: 4px 0;
+    border-radius: 8px;
+    background: #f0f9f0;
+    color: #333;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.country-item:hover {
+    background: #4CAF50;
+    color: white;
+}
+
+.country-item.removed {
+    background: #e0e0e0 !important;
+    color: #666 !important;
+    text-decoration: line-through;
+    pointer-events: none;
+    position: relative;
+}
+
+.country-item.removed::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+}
+
+.sidebar-title {
+    font-size: 16px;
+    color: #333;
+    margin-bottom: 10px;
+    text-align: center;
+    font-weight: bold;
+}
+
+@media (max-width: 768px) {
+    .countries-sidebar {
+        position: fixed;
+        top: auto;
+        bottom: 5px;
+        /* Cambiado de 20px a 5px para ponerlo más abajo */
+        left: 50%;
+        transform: translateX(-50%);
+        width: 85%;
+        max-height: 120px;
+        /* Reducido de 150px a 120px */
+        display: flex;
+        flex-direction: column;
+    }
+
+    .countries-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: center;
+    }
+
+    .country-item {
+        font-size: 14px;
+        padding: 6px 10px;
+    }
+}
+
+/* Add these new animations to your CSS section */
+@keyframes slideInDown {
+    from {
+        transform: translate(-50%, -20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translate(-50%, 0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutUp {
+    from {
+        transform: translate(-50%, 0);
+        opacity: 1;
+    }
+
+    to {
+        transform: translate(-50%, -20px);
+        opacity: 0;
+    }
+}
+
+@keyframes shakeItem {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-4px);
+    }
+
+    75% {
+        transform: translateX(4px);
+    }
+}
+
+@keyframes fadeOutItem {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.1);
+        opacity: 0.5;
+    }
+
+    100% {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+}
+
+.country-item.incorrect {
+    animation: shakeItem 0.4s ease-in-out;
+    background: rgba(255, 51, 51, 0.2);
+}
+
+/* Update the animations and styles for country items */
+@keyframes correctItem {
+    0% {
+        transform: scale(1);
+        background: #f0f9f0;
+    }
+
+    50% {
+        transform: scale(1.1);
+        background: #e0e0e0;
+        color: #666;
+    }
+
+    100% {
+        transform: scale(1);
+        background: #e0e0e0;
+        color: #666;
+    }
+}
+
+.country-item.correct {
+    animation: correctItem 0.5s ease-out forwards;
+}
+
+/* Add this CSS for initial state */
+.clue-container,
+.countries-sidebar {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.clue-container.visible,
+.countries-sidebar.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Add new animation for clue changes */
+@keyframes newClueAnimation {
+    0% {
+        transform: translateX(-50%) scale(1);
+        background: rgba(255, 255, 255, 0.95);
+        border-color: #4CAF50;
+    }
+
+    50% {
+        transform: translateX(-50%) scale(1.05);
+        background: rgba(76, 175, 80, 0.15);
+        border-color: #45a049;
+    }
+
+    100% {
+        transform: translateX(-50%) scale(1);
+        background: rgba(255, 255, 255, 0.95);
+        border-color: #4CAF50;
+    }
+}
+
+.clue-container.new-clue {
+    animation: newClueAnimation 1s ease-out;
+}
+
+/* Add animation for clue text */
+@keyframes clueTextAnimation {
+    0% {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.clue-text.new-clue {
+    animation: clueTextAnimation 0.8s ease-out;
+}
+
+.final-modal.game-over {
+    background: linear-gradient(to bottom, #fff5f5, #fff);
+    border: 2px solid #ff6b6b;
+}
+
+.final-modal.game-over h2 {
+    color: #ff6b6b;
+    font-size: 28px;
+    margin-bottom: 30px;
+    line-height: 1.4;
+}
+
+.game-over-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.restart-message {
+    font-size: 22px;
+    color: #333;
+}
+
+.condition-message {
+    font-size: 20px;
+    color: #666;
+    background: #f8f9fa;
+    padding: 15px 25px;
+    border-radius: 12px;
+    margin: 10px 0 20px;
+}
+
+.game-over .start-button {
+    background: #ff6b6b;
+    margin-top: 10px;
+    font-size: 20px;
+    padding: 15px 40px;
+}
+
+.game-over .start-button:hover {
+    background: #ff5252;
+}
+
+@media (max-width: 768px) {
+    .final-modal.game-over h2 {
+        font-size: 24px;
+    }
+
+    .restart-message {
+        font-size: 20px;
+    }
+
+    .condition-message {
+        font-size: 18px;
+        padding: 12px 20px;
+    }
+}
+
+/* Country label styles */
+.country-label {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.country-label div {
+    color: #333;
+    font-weight: bold;
+    font-size: 14px;
+    text-shadow: 
+        2px 2px 2px white,
+        -2px 2px 2px white,
+        2px -2px 2px white,
+        -2px -2px 2px white;
+    text-align: center;
+    width: 100px;
+    cursor: pointer;
+    pointer-events: auto !important;
+    background: transparent !important;
+}
+
+.country-label div:hover {
+    color: #000;
+    transform: scale(1.1);
+    transition: all 0.2s ease;
+}
