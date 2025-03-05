@@ -256,10 +256,9 @@
     }
 
     function showLevelBanner(level, total) {
-        // Bloquear interacciones
+        // Block interactions
         levelBannerActive = true;
         
-        // Crear el banner si no existe
         let banner = document.getElementById('levelBanner');
         if (!banner) {
             banner = document.createElement('div');
@@ -268,24 +267,29 @@
             document.body.appendChild(banner);
         }
 
-        // Actualizar el contenido
         banner.innerHTML = `
             <h2>¡Afirmación ${level} de ${total}! 🎯</h2>
             <p>${level === 1 ? '¡Comencemos!' : '¡Excelente progreso!'}</p>
         `;
 
-        // Mostrar el banner
+        // Show the banner
         banner.classList.remove('show');
-        void banner.offsetWidth; // Forzar reflow
+        void banner.offsetWidth; // Force reflow
         banner.classList.add('show');
 
-        // Vibración para feedback táctil
+        // Tactile feedback
         vibrate([100, 50, 100]);
         
-        // Desbloquear interacciones después de la animación
-        setTimeout(() => {
+        // Clear any existing timeouts
+        if (window.levelBannerTimeout) {
+            clearTimeout(window.levelBannerTimeout);
+        }
+        
+        // Unblock interactions after animation AND ensure banner is hidden
+        window.levelBannerTimeout = setTimeout(() => {
             levelBannerActive = false;
-        }, 2000); // Mismo tiempo que la duración de la animación del banner
+            banner.classList.remove('show');
+        }, 2000);
     }
 
     function updateClue() {
