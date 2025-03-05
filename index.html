@@ -37,25 +37,74 @@
     }
     .modal {
       background: white;
-      padding: 30px;
-      border-radius: 10px;
-      max-width: 500px;
+      padding: 40px;
+      border-radius: 15px;
+      max-width: 600px;
       text-align: center;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .modal h2 {
+      color: #4CAF50;
+      margin-bottom: 25px;
+      font-size: 24px;
+      line-height: 1.3;
+    }
+    .instructions-content {
+      text-align: left;
+      margin: 20px 0;
+    }
+    .main-description {
+      font-size: 18px;
+      color: #333;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .instructions-list {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 15px 0;
+    }
+    .instructions-list ul {
+      padding-left: 20px;
+      margin: 15px 0;
+    }
+    .instructions-list li {
+      margin-bottom: 12px;
+      color: #444;
+      line-height: 1.4;
+    }
+    .highlight-text {
+      font-size: 18px;
+      color: #4CAF50;
+      margin: 20px 0;
+      text-align: center;
+      font-weight: bold;
+    }
+    .warning-text {
+      color: #ff3333;
+      font-weight: bold;
+      text-align: center;
+      margin-top: 20px;
+      padding: 10px;
+      border: 2px solid #ff3333;
+      border-radius: 8px;
+      background: rgba(255, 51, 51, 0.05);
     }
     .start-button {
       background: #4CAF50;
       color: white;
       border: none;
-      padding: 10px 20px;
-      border-radius: 5px;
-      font-size: 16px;
+      padding: 15px 30px;
+      border-radius: 8px;
+      font-size: 18px;
       cursor: pointer;
-      margin-top: 20px;
-      transition: background 0.3s;
+      margin-top: 25px;
+      transition: all 0.3s ease;
     }
     .start-button:hover {
       background: #45a049;
+      transform: scale(1.05);
     }
     @keyframes celebrate {
       0% {
@@ -165,26 +214,62 @@
     }
     .final-modal h2 {
       color: #4CAF50;
-      margin-bottom: 20px;
-      font-size: 28px;
+      margin-bottom: 30px;
+      font-size: 32px;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
     }
-    .final-modal p {
-      font-size: 18px;
+    .victory-content {
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+    }
+    .victory-message {
+      font-size: 22px;
       color: #333;
-      margin: 15px 0;
+      line-height: 1.4;
+    }
+    .destination-reveal {
+      background: #f8f9fa;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 10px 0;
+    }
+    .reveal-text {
+      font-size: 20px;
+      color: #333;
+      margin-bottom: 20px;
     }
     .final-countries {
       display: flex;
       justify-content: center;
-      gap: 20px;
-      margin: 20px 0;
+      gap: 30px;
+      margin: 25px 0;
     }
     .final-country {
-      background: #f0f9f0;
-      padding: 10px 20px;
-      border-radius: 10px;
+      background: linear-gradient(145deg, #ffffff, #f0f9f0);
+      padding: 20px 30px;
+      border-radius: 15px;
       font-weight: bold;
       color: #4CAF50;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: transform 0.3s ease;
+    }
+    .final-country:hover {
+      transform: translateY(-5px);
+    }
+    .country-emoji {
+      font-size: 40px;
+    }
+    .country-name {
+      font-size: 20px;
+    }
+    .error-summary {
+      font-size: 18px;
+      color: #666;
+      margin-top: 20px;
     }
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(-20px); }
@@ -605,6 +690,65 @@
     .clue-text.new-clue {
       animation: clueTextAnimation 0.8s ease-out;
     }
+
+    .final-modal.game-over {
+      background: linear-gradient(to bottom, #fff5f5, #fff);
+      border: 2px solid #ff6b6b;
+    }
+
+    .final-modal.game-over h2 {
+      color: #ff6b6b;
+      font-size: 28px;
+      margin-bottom: 30px;
+      line-height: 1.4;
+    }
+
+    .game-over-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .restart-message {
+      font-size: 22px;
+      color: #333;
+    }
+
+    .condition-message {
+      font-size: 20px;
+      color: #666;
+      background: #f8f9fa;
+      padding: 15px 25px;
+      border-radius: 12px;
+      margin: 10px 0 20px;
+    }
+
+    .game-over .start-button {
+      background: #ff6b6b;
+      margin-top: 10px;
+      font-size: 20px;
+      padding: 15px 40px;
+    }
+
+    .game-over .start-button:hover {
+      background: #ff5252;
+    }
+
+    @media (max-width: 768px) {
+      .final-modal.game-over h2 {
+        font-size: 24px;
+      }
+      
+      .restart-message {
+        font-size: 20px;
+      }
+      
+      .condition-message {
+        font-size: 18px;
+        padding: 12px 20px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -628,36 +772,64 @@
   <div class="message-container" id="message"></div>
   <div class="modal-overlay" id="instructionsModal">
     <div class="modal">
-      <h2>¡Bienvenido al Juego de Países!</h2>
-      <p>Instrucciones:</p>
-      <ul style="text-align: left;">
-        <li>Se te presentarán varias afirmaciones sobre países.</li>
-        <li>Tu objetivo es identificar y hacer clic en los países que <strong>NO</strong> cumplen con la afirmación mostrada.</li>
-        <li>Puedes hacer clic en el país o en su nombre para seleccionarlo.</li>
-        <li>Los países correctamente seleccionados se volverán grises.</li>
-        <li>Cuando encuentres todos los países de una afirmación, pasarás a la siguiente.</li>
-      </ul>
-      <button class="start-button" onclick="startGame()">¡Comenzar!</button>
+      <h2>¡Bienvenido al juego que te llevará a tu destino sorpresa! 🎁</h2>
+      
+      <div class="instructions-content">
+        <p class="main-description">Se te presentarán varias afirmaciones sobre países.</p>
+        
+        <div class="instructions-list">
+          <p><strong>Tu objetivo:</strong> Identificar y hacer clic en los países que <strong>NO</strong> cumplen con la afirmación mostrada.</p>
+          
+          <ul>
+            <li>Puedes hacer clic en el país directamente en el mapa o en su nombre en la lista a la izquierda para seleccionarlo</li>
+            <li>Cuando selecciones todos los países que no cumplan con una afirmación, pasarás a la siguiente.</li>
+            <li>Los países correctamente seleccionados se volverán grises y serán descartados como posibles destinos</li>
+          </ul>
+          
+          <p class="highlight-text">Al final del juego, ¡solo quedará tu destino sorpresa! 🎉</p>
+          
+          <p class="warning-text">⚠️ Importante: Con más de 5 fallos, se cancela automáticamente la reserva.</p>
+        </div>
+      </div>
+      
+      <button class="start-button" onclick="startGame()">¡Comenzar la Aventura!</button>
     </div>
   </div>
   <div class="modal-overlay" id="finalModal" style="display: none;">
     <div class="final-modal">
       <h2>¡Felicitaciones! 🎉</h2>
-      <p>Has completado todas las afirmaciones correctamente.</p>
-      <p class="final-errors">Total de fallos: <span id="finalErrorCount">0</span></p>
-      <p>Los países finales son:</p>
-      <div class="final-countries">
-        <div class="final-country">Estonia</div>
-        <div class="final-country">Finlandia</div>
+      
+      <div class="victory-content">
+        <p class="victory-message">Eres un as de la geopolítica! Pero eso ya lo sabíamos 😊</p>
+        
+        <div class="destination-reveal">
+          <p class="reveal-text">Tu destino sorpresa son <strong>dos destinos</strong>:</p>
+          <div class="final-countries">
+            <div class="final-country">
+              <span class="country-emoji">🇫🇮</span>
+              <span class="country-name">Finlandia</span>
+            </div>
+            <div class="final-country">
+              <span class="country-emoji">🇪🇪</span>
+              <span class="country-name">Estonia</span>
+            </div>
+          </div>
+        </div>
+        
+        <p class="error-summary">Total de fallos: <span id="finalErrorCount">0</span></p>
       </div>
     </div>
   </div>
   <div class="modal-overlay" id="gameOverModal" style="display: none;">
-    <div class="final-modal">
-      <h2 style="color: #ff3333;">¡Game Over! 😢</h2>
-      <p>Has cometido 5 errores.</p>
-      <p>¿Quieres intentarlo de nuevo?</p>
-      <button class="start-button" onclick="restartGame()">Reintentar</button>
+    <div class="final-modal game-over">
+      <h2>Lo sentimos, ha perdido el juego y con ello, su sorpresa 💔</h2>
+      
+      <div class="game-over-content">
+        <p class="restart-message">La buena noticia es que puede reiniciarlo.</p>
+        <p class="condition-message">Solo debe decirle a su novia que es la mejor del mundo 😁</p>
+        
+        <button class="start-button" onclick="restartGame()">Reintentar</button>
+      </div>
     </div>
   </div>
   <script>
