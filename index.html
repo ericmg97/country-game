@@ -211,20 +211,20 @@
         }
       },
       { 
-        text: "Su capital tiene salida a un golfo", 
+        text: "Tiene salida a un golfo", 
         remove: ["Lituania"],
         explanations: {
-          "Lituania": "Vilna, la capital de Lituania, está ubicada tierra adentro y no tiene acceso directo al mar",
-          "Finlandia": "Helsinki, la capital de Finlandia, está ubicada en el golfo de Finlandia",
-          "Estonia": "Tallin, la capital de Estonia, está ubicada en el golfo de Finlandia",
-          "Malta": "La Valeta, la capital de Malta, está en el mar Mediterráneo, no en un golfo",
-          "Chipre": "Nicosia, la capital de Chipre, está ubicada en el interior de la isla",
-          "Croacia": "Zagreb, la capital de Croacia, está ubicada en el interior del país",
-          "Macedonia": "Skopje, la capital de Macedonia del Norte, está ubicada en el interior del país",
-          "Liechtenstein": "Vaduz, la capital de Liechtenstein, está ubicada en el interior del país",
-          "Noruega": "Oslo está ubicada en un fiordo, no en un golfo",
-          "Letonia": "Riga está ubicada en el golfo de Riga",
-          "Suecia": "Estocolmo está ubicada en un archipiélago, no directamente en un golfo"
+          "Lituania": "Lituania solo tiene acceso al mar Báltico, pero no a ningún golfo",
+          "Finlandia": "Finlandia tiene acceso al golfo de Finlandia y al golfo de Botnia",
+          "Estonia": "Estonia tiene acceso al golfo de Finlandia",
+          "Malta": "Malta está en el mar Mediterráneo, sin acceso directo a ningún golfo",
+          "Chipre": "Chipre está en el mar Mediterráneo oriental, sin acceso directo a ningún golfo",
+          "Croacia": "Croacia tiene costa en el mar Adriático, pero no tiene acceso directo a ningún golfo",
+          "Macedonia": "Macedonia del Norte no tiene acceso al mar",
+          "Liechtenstein": "Liechtenstein no tiene acceso al mar",
+          "Noruega": "Noruega tiene fiordos y acceso al mar del Norte, pero no a golfos específicamente",
+          "Letonia": "Letonia tiene acceso al golfo de Riga",
+          "Suecia": "Suecia tiene acceso al golfo de Botnia"
         }
       },
       { 
@@ -366,8 +366,8 @@
         banner.innerHTML = `
             <h2>¡Afirmación ${level} de ${total}! 🎯</h2>
             <p>${byElimination ? 
-                '¡Has avanzado por eliminación! 🤔 La próxima vez intenta identificar los países correctos primero 😉' : 
-                (level === 1 ? '¡Comencemos!' : '¡Excelente progreso!')}
+                '¡Avanzas por descarte! Has seleccionado todos los países incorrectos 🫣' : 
+                (level === 1 ? '¡Comencemos!' : '¡Terelu vas muy bien!')}
             </p>
         `;
 
