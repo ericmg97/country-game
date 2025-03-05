@@ -660,39 +660,61 @@
       candidates.forEach(candidate => {
         const layer = countryLayers[candidate.name];
         if (layer) {
+          // Generate a new random color for each country
+          const hue = Math.random() * 360;
           layer.setStyle({
+            fillColor: `hsl(${hue}, 70%, 85%)`,
+            color: '#666',
+            weight: 2,
             fillOpacity: 0.6,
             opacity: 1
           });
           
-          // Re-attach event listeners
-          layer.on('click', function() {
-            checkSelection(candidate.name, layer);
+          // Re-attach all event listeners
+          layer.on({
+            click: function() {
+              checkSelection(candidate.name, layer);
+            },
+            mouseover: function(e) {
+              layer.setStyle({
+                fillOpacity: 0.8,
+                weight: 3
+              });
+            },
+            mouseout: function(e) {
+              layer.setStyle({
+                fillOpacity: 0.6,
+                weight: 2
+              });
+            }
           });
         }
         
-        // Restore label if it was removed
-        if (!labelMarkers[candidate.name]) {
-          const center = countryLayers[candidate.name].getBounds().getCenter();
-          const labelMarker = L.marker(center, {
-            icon: L.divIcon({
-              className: 'country-label',
-              html: `<div class="country-name">${candidate.name}</div>`,
-              iconSize: [100, 40],
-              iconAnchor: [50, 20]
-            })
-          }).addTo(map);
-
-          labelMarkers[candidate.name] = labelMarker;
-          labelMarker.on('click', function() {
-            checkSelection(candidate.name, countryLayers[candidate.name]);
-          });
+        // Remove old label if it exists
+        if (labelMarkers[candidate.name]) {
+          map.removeLayer(labelMarkers[candidate.name]);
+          delete labelMarkers[candidate.name];
         }
+        
+        // Create new label
+        const center = countryLayers[candidate.name].getBounds().getCenter();
+        const labelMarker = L.marker(center, {
+          icon: L.divIcon({
+            className: 'country-label',
+            html: `<div class="country-name">${candidate.name}</div>`,
+            iconSize: [100, 40],
+            iconAnchor: [50, 20]
+          })
+        }).addTo(map);
+
+        labelMarkers[candidate.name] = labelMarker;
+        labelMarker.on('click', function() {
+          checkSelection(candidate.name, countryLayers[candidate.name]);
+        });
       });
       
-      document.querySelectorAll('.country-item.temp-disabled').forEach(el => {
-        el.classList.remove('temp-disabled');
-      });
+      // Recreate the entire countries list to ensure a fresh start
+      createCountriesList();
       
       // Reset clues
       clues.forEach(clue => {
@@ -711,17 +733,11 @@
       // Reset error counter display
       document.getElementById("errorCount").innerHTML = "0 fallos";
       
-      // Recreate countries list
-      createCountriesList();
+      // Clear disabled states
+      disabledCountries.clear();
       
       // Update first clue
       updateClue();
-
-      // Clear disabled states
-      disabledCountries.clear();
-      document.querySelectorAll('.temp-disabled').forEach(el => {
-        el.classList.remove('temp-disabled');
-      });
     }
 
     // Add this right after the clues array definition to store original remove arrays
