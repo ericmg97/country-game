@@ -456,107 +456,47 @@ button {
         font-size: 32px;
     }
 
-    /* Estilos para modales en móvil */
+    .modal-overlay {
+        align-items: flex-start;
+        padding: 10px;
+        overflow-y: auto;
+        max-height: 100vh;
+    }
+
     .modal {
         width: 85%;
-        padding: 25px;
-        margin: 20px;
+        padding: 15px;
+        margin: 10px auto;
+        max-height: calc(100vh - 40px);
+        overflow-y: auto;
     }
 
-    .modal ul {
-        padding-left: 20px;
+    .instructions-content {
+        margin: 10px 0;
     }
 
-    .modal li {
-        font-size: 16px;
-        margin-bottom: 10px;
+    .instructions-list {
+        padding: 10px;
+        margin: 10px 0;
+    }
+
+    .instructions-list li {
+        margin-bottom: 8px;
+        font-size: 14px;
     }
 
     .start-button {
-        font-size: 18px;
-        padding: 15px 30px;
+        position: sticky;
+        bottom: 0;
+        margin: 15px auto 5px;
+        width: 80%;
+        padding: 12px 20px;
     }
 
-    .final-modal {
-        width: 85%;
-        padding: 30px;
-    }
-
-    .final-modal h2 {
-        font-size: 26px;
-    }
-
-    .final-modal p {
-        font-size: 20px;
-    }
-
-    .final-country {
-        font-size: 18px;
-        padding: 12px 24px;
-    }
-
-    /* Update the mobile styles for the countries sidebar */
-    .countries-sidebar {
-        position: fixed;
-        top: auto;
-        bottom: 5px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 85%;
-        max-height: none;
-        display: flex;
-        flex-direction: column;
-        background: rgba(255, 255, 255, 0.98);
-        z-index: 1001;
-        padding: 5px;
-    }
-
-    .sidebar-title {
-        display: none;
-    }
-
-    .countries-list {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 4px;
-        justify-content: center;
-        padding: 5px;
-    }
-
-    .country-item {
-        font-size: 12px;
-        padding: 4px 8px;
-        margin: 0;
-    }
-
-    /* Adjust map padding to accommodate the list */
-    #map {
-        padding-bottom: 180px;
-    }
-
-    /* Update animations for bottom positioning */
-    @keyframes slideInDown {
-        from {
-            transform: translate(-50%, 20px);
-            opacity: 0;
-        }
-    
-        to {
-            transform: translate(-50%, 0);
-            opacity: 1;
-        }
-    }
-    
-    @keyframes slideOutUp {
-        from {
-            transform: translate(-50%, 0);
-            opacity: 1;
-        }
-    
-        to {
-            transform: translate(-50%, 20px);
-            opacity: 0;
-        }
+    .warning-text {
+        padding: 8px;
+        margin-top: 10px;
+        font-size: 14px;
     }
 }
 
@@ -572,11 +512,22 @@ button {
     }
 
     .modal {
-        padding: 20px;
+        padding: 12px;
+        margin: 5px auto;
     }
 
-    .modal li {
-        font-size: 14px;
+    .instructions-list {
+        padding: 8px;
+    }
+
+    .instructions-list li {
+        font-size: 13px;
+        margin-bottom: 6px;
+    }
+
+    .start-button {
+        padding: 10px 15px;
+        font-size: 16px;
     }
 
     .countries-sidebar {
