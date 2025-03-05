@@ -489,9 +489,6 @@
         messageTimeout = null;
       }
       
-      // Set message as active
-      messageActive = true;
-      
       // If a message is currently animating out, remove the animation and show new message immediately
       if (messageContainer.classList.contains('hiding')) {
         messageContainer.classList.remove('hiding');
@@ -514,8 +511,6 @@
             // Only hide if the message hasn't been updated
             if (messageContainer.classList.contains('hiding')) {
               messageContainer.style.display = 'none';
-              // Set message as inactive
-              messageActive = false;
             }
           }, 500); // Animation duration
         }
@@ -523,8 +518,8 @@
     }
 
     function checkSelection(country, layer) {
-      // Añadir levelBannerActive a las condiciones de bloqueo
-      if (isProcessing || !gameActive || messageActive || disabledCountries.has(country) || levelBannerActive) return;
+      // Add clueFinished to the conditions that block clicks
+      if (isProcessing || !gameActive || disabledCountries.has(country) || levelBannerActive) return;
       isProcessing = true;
 
       // Create celebration effect function
@@ -594,7 +589,9 @@
         document.getElementById("remainingCount").innerHTML = `${clues[currentClueIndex].remove.length} países restantes`;
 
         if (clues[currentClueIndex].remove.length === 0) {
-          // Only clear disabled countries when moving to next clue
+          // Block clicks immediately when clue is completed
+          levelBannerActive = true;
+          
           currentClueIndex++;
           if (currentClueIndex >= clues.length) {
             // Disable game immediately
