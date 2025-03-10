@@ -353,7 +353,6 @@
         levelBannerActive = true;
         
         let banner = document.getElementById('levelBanner');
-        // Set the animation duration based on the type
         banner.style.setProperty('--banner-duration', byElimination ? '4s' : '2.5s');
 
         if (!banner) {
@@ -363,32 +362,40 @@
             document.body.appendChild(banner);
         }
 
+        // Array de mensajes de progreso
+        const progressMessages = [
+            "¡Comencemos!", // Mensaje inicial
+            "Terelu vas muy bien",
+            "¡Eres un crack! Y yo le dije, un piquito?",
+            "Drakukeo el empalador, que empalo?",
+            "Dale caña Gregoria",
+            "¡No pares, sigue sigue!",
+            "¡Ni Messi en sus mejores tiempos!"
+        ];
+
         banner.innerHTML = `
             <h2>¡Afirmación ${level} de ${total}! 🎯</h2>
             <p>${byElimination ? 
-                '¡Avanzas por descarte! Has seleccionado todos los países incorrectos 🫣' : 
-                (level === 1 ? '¡Comencemos!' : '¡Terelu vas muy bien!')}
+                '¡Avanzas por haber descartado todos los países incorrectos! 🫣' : 
+                (level === 1 ? progressMessages[0] : progressMessages[level - 1])}
             </p>
         `;
 
         // Show the banner
         banner.classList.remove('show');
-        void banner.offsetWidth; // Force reflow
+        void banner.offsetWidth;
         banner.classList.add('show');
 
-        // Tactile feedback
         vibrate([100, 50, 100]);
         
-        // Clear any existing timeouts
         if (window.levelBannerTimeout) {
             clearTimeout(window.levelBannerTimeout);
         }
         
-        // Unblock interactions after animation AND ensure banner is hidden
         window.levelBannerTimeout = setTimeout(() => {
             levelBannerActive = false;
             banner.classList.remove('show');
-        }, byElimination ? 4000 : 2500); // Más tiempo si es por descarte
+        }, byElimination ? 4000 : 2500);
     }
 
     function updateClue() {
